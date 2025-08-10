@@ -163,9 +163,17 @@ export default function SalesPage() {
     id: string,
     status: "waiting" | "in-progress" | "completed"
   ) => {
-    setQueueItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, status } : item))
-    );
+    setQueueItems((prev) => {
+      if (status === "completed") {
+        // Remove completed cars from the queue
+        return prev.filter((item) => item.id !== id);
+      } else {
+        // Update status for waiting and in-progress cars
+        return prev.map((item) =>
+          item.id === id ? { ...item, status } : item
+        );
+      }
+    });
   };
 
   // Calculate total price
@@ -241,90 +249,141 @@ export default function SalesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
-      {/* Header with Sign Out Button and Tab Navigation */}
-      <div className="max-w-md mx-auto px-4 pt-4">
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex bg-white rounded-lg p-1 shadow-sm">
-            <button
-              onClick={() => setActiveTab("booking")}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                activeTab === "booking"
-                  ? "bg-blue-500 text-white shadow-sm"
-                  : "text-gray-600 hover:text-blue-600"
-              }`}
-            >
-              New Booking
-            </button>
-            <button
-              onClick={() => setActiveTab("queue")}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                activeTab === "queue"
-                  ? "bg-blue-500 text-white shadow-sm"
-                  : "text-gray-600 hover:text-blue-600"
-              }`}
-            >
-              Queue ({queueItems.length})
-            </button>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              {/* Empty div for spacing */}
+            </div>
+
+            {/* User Avatar and Sign Out */}
+            <div className="relative">
+              <button
+                onClick={handleSignOut}
+                className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <div
+                  className="w-8 h-8 rounded-full flex items-center justify-center"
+                  style={{ backgroundColor: "var(--auth-purple)" }}
+                >
+                  <span className="text-white text-sm font-medium">S</span>
+                </div>
+                <div className="hidden sm:block text-left">
+                  <p className="text-sm font-medium text-gray-900">
+                    Sales Staff
+                  </p>
+                </div>
+                <LogOut className="h-4 w-4 text-gray-500" />
+              </button>
+            </div>
           </div>
-          <button
-            onClick={handleSignOut}
-            className="flex items-center px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-red-600 transition-all duration-200 shadow-sm"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Sign Out
-          </button>
         </div>
       </div>
 
-      <div className="max-w-md mx-auto px-4 py-2 sm:py-4">
-        {activeTab === "booking" && (
-          <>
-            <ProgressBar currentStep={currentStep} totalSteps={4} />
-            <StepIndicator currentStep={currentStep} />
-          </>
-        )}
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 pt-6">
+        {/* Tab Navigation - Admin Style with Shifting Animation */}
+        <div className="mb-4 sm:mb-8">
+          <div className="flex justify-center items-center py-2 sm:py-4 lg:py-6">
+            <div
+              className="flex rounded-2xl p-1 sm:p-2 relative overflow-hidden backdrop-blur-md w-full max-w-md"
+              style={{
+                backgroundColor: "rgba(255, 255, 255, 0.1)",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
+                boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              {/* Animated Background Slider */}
+              <div
+                className={`absolute top-2 bottom-2 rounded-xl transition-all duration-500 ease-out ${
+                  activeTab === "booking"
+                    ? "left-2 w-[calc(50%-0.5rem)]"
+                    : "left-[calc(50%+0.5rem)] w-[calc(50%-0.5rem)]"
+                }`}
+                style={{
+                  backgroundColor: "rgba(37, 99, 235, 0.9)",
+                  backdropFilter: "blur(10px)",
+                  boxShadow: "0 4px 16px rgba(37, 99, 235, 0.3)",
+                }}
+              />
 
-        <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-6">
-          {activeTab === "booking" ? (
-            <>
-              {renderStep()}
-              {!isConfirmed && (
-                <div className="flex justify-between mt-6 pt-4 border-t">
-                  {currentStep > 1 && (
-                    <button
-                      onClick={handleBack}
-                      className="flex items-center px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                    >
-                      <ChevronLeft className="w-4 h-4 mr-1" />
-                      Back
-                    </button>
+              {[
+                { id: "booking", label: "New Booking" },
+                { id: "queue", label: "Queue" },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as "booking" | "queue")}
+                  className={`flex items-center justify-center px-3 sm:px-4 lg:px-6 py-2 sm:py-3 rounded-xl font-semibold text-xs sm:text-sm lg:text-base transition-all duration-300 whitespace-nowrap relative z-10 flex-1 ${
+                    activeTab === tab.id
+                      ? "text-white"
+                      : "text-gray-600 hover:text-gray-800"
+                  }`}
+                >
+                  <span className="text-center leading-tight">{tab.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="transition-all duration-300 ease-in-out">
+          {activeTab === "booking" && (
+            <div className="animate-fadeIn">
+              <div className="max-w-md mx-auto">
+                <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-6">
+                  {activeTab === "booking" && (
+                    <>
+                      <ProgressBar currentStep={currentStep} totalSteps={4} />
+                      <StepIndicator currentStep={currentStep} />
+                    </>
                   )}
 
-                  {currentStep < 4 && (
-                    <button
-                      onClick={handleNext}
-                      className="flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 ml-auto font-medium"
-                    >
-                      Continue
-                      <ChevronRight className="w-4 h-4 ml-1" />
-                    </button>
+                  {renderStep()}
+                  {!isConfirmed && (
+                    <div className="flex justify-between mt-6 pt-4 border-t">
+                      {currentStep > 1 && (
+                        <button
+                          onClick={handleBack}
+                          className="flex items-center px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                        >
+                          <ChevronLeft className="w-4 h-4 mr-1" />
+                          Back
+                        </button>
+                      )}
+
+                      {currentStep < 4 && (
+                        <button
+                          onClick={handleNext}
+                          className="flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 ml-auto font-medium"
+                        >
+                          Continue
+                          <ChevronRight className="w-4 h-4 ml-1" />
+                        </button>
+                      )}
+                    </div>
                   )}
                 </div>
-              )}
-            </>
-          ) : (
-            <QueueSection
-              queueItems={queueItems}
-              queueFilter={queueFilter}
-              searchTerm={searchTerm}
-              setQueueFilter={setQueueFilter}
-              setSearchTerm={setSearchTerm}
-              updateQueueStatus={updateQueueStatus}
-            />
+              </div>
+            </div>
+          )}
+
+          {activeTab === "queue" && (
+            <div className="animate-fadeIn">
+              <QueueSection
+                queueItems={queueItems}
+                queueFilter={queueFilter}
+                searchTerm={searchTerm}
+                setQueueFilter={setQueueFilter}
+                setSearchTerm={setSearchTerm}
+                updateQueueStatus={updateQueueStatus}
+              />
+            </div>
           )}
         </div>
-      </div>
+      </main>
     </div>
   );
 }
