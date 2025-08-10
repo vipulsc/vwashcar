@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
 
 // CORS headers
 const corsHeaders = {
@@ -27,8 +25,6 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  let tempFilePath: string | null = null;
-
   try {
     // Parse form data from camera capture
     const formData = await request.formData();
@@ -54,25 +50,11 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Create temp directory if needed
-    const uploadsDir = path.join(process.cwd(), "uploads");
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true });
-    }
-
-    // Save captured image temporarily
-    const timestamp = Date.now();
-    const randomId = Math.random().toString(36).substring(2, 15);
-    tempFilePath = path.join(
-      uploadsDir,
-      `capture_${timestamp}_${randomId}.jpg`
-    );
-    fs.writeFileSync(tempFilePath, buffer);
+    // Create blob directly from buffer (no file system operations)
+    const blob = new Blob([buffer], { type: file.type || "image/jpeg" });
 
     // Send to Plate Recognizer API
     const plateRecognizerFormData = new FormData();
-    const fileBuffer = fs.readFileSync(tempFilePath);
-    const blob = new Blob([fileBuffer], { type: "image/jpeg" });
     plateRecognizerFormData.append("upload", blob, "capture.jpg");
 
     const apiResponse = await fetch(
@@ -117,11 +99,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Clean up temporary file
-    if (tempFilePath && fs.existsSync(tempFilePath)) {
-      fs.unlinkSync(tempFilePath);
-    }
-
     return NextResponse.json(
       {
         plateText,
@@ -133,15 +110,6 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     console.error("Plate recognition error:", error);
-
-    // Clean up temporary file on error
-    if (tempFilePath && fs.existsSync(tempFilePath)) {
-      try {
-        fs.unlinkSync(tempFilePath);
-      } catch (cleanupError) {
-        console.error("Failed to cleanup temp file:", cleanupError);
-      }
-    }
 
     // Return appropriate error response
     const errorMessage =
