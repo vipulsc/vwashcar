@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback, memo } from "react";
 import { X } from "lucide-react";
 
 interface PlateScannerProps {
@@ -9,7 +9,7 @@ interface PlateScannerProps {
   onPlateDetected: (plateNumber: string) => void;
 }
 
-export default function PlateScanner({
+const PlateScanner = memo(function PlateScanner({
   isOpen,
   onClose,
   onPlateDetected,
@@ -21,8 +21,9 @@ export default function PlateScanner({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const processingRef = useRef<boolean>(false);
 
-  const startCamera = async () => {
+  const startCamera = useCallback(async () => {
     try {
       setError("");
 
@@ -32,12 +33,13 @@ export default function PlateScanner({
         return;
       }
 
-      // Request camera access
+      // Request camera access with optimized settings
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: "environment", // Use back camera
-          width: { ideal: 1280, min: 640 },
-          height: { ideal: 720, min: 480 },
+          width: { ideal: 1280, min: 640, max: 1920 },
+          height: { ideal: 720, min: 480, max: 1080 },
+          frameRate: { ideal: 30, max: 30 }, // Limit frame rate for performance
         },
         audio: false,
       });
@@ -68,9 +70,9 @@ export default function PlateScanner({
         setError("Failed to access camera. Please check permissions.");
       }
     }
-  };
+  }, []);
 
-  const stopCamera = () => {
+  const stopCamera = useCallback(() => {
     // Stop all camera tracks
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => {
@@ -89,6 +91,7 @@ export default function PlateScanner({
     setIsCameraActive(false);
     setLoading(false);
     setError("");
+    processingRef.current = false;
 
     // Clear auto-detection interval
     if (intervalRef.current) {
@@ -97,66 +100,104 @@ export default function PlateScanner({
     }
 
     console.log("Camera stopped and cleaned up");
-  };
+  }, []);
 
-  const captureFrame = async (): Promise<File | null> => {
-    if (!videoRef.current || !canvasRef.current) return null;
-
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-    const context = canvas.getContext("2d");
-
-    if (!context) return null;
-
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-    return new Promise<File | null>((resolve) => {
-      canvas.toBlob((blob) => {
-        if (blob) {
-          const file = new File([blob], "capture.jpg", { type: "image/jpeg" });
-          resolve(file);
-        } else {
-          resolve(null);
-        }
-      }, "image/jpeg");
-    });
-  };
-
-  const processImage = async (imageFile: File) => {
-    setLoading(true);
-    setError("");
+  const captureFrame = useCallback(async (): Promise<File | null> => {
+    if (!videoRef.current || !canvasRef.current || !isCameraActive) {
+      return null;
+    }
 
     try {
-      const formData = new FormData();
-      formData.append("file", imageFile);
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      const context = canvas.getContext("2d");
 
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
+      if (!context) {
+        console.error("Could not get canvas context");
+        return null;
+      }
+
+      // Set canvas size to match video dimensions
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+
+      // Draw video frame to canvas
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      // Convert canvas to blob with optimized quality
+      return new Promise((resolve) => {
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const file = new File([blob], "capture.jpg", {
+                type: "image/jpeg",
+              });
+              resolve(file);
+            } else {
+              resolve(null);
+            }
+          },
+          "image/jpeg",
+          0.8 // Optimize quality for performance
+        );
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        console.error("API Error:", data);
-        throw new Error(data.error || "Upload failed");
-      }
-
-      if (data.plateText && data.plateText !== "Not Detected") {
-        onPlateDetected(data.plateText);
-        stopCamera();
-        onClose();
-      }
-    } catch (err: unknown) {
-      const errorMessage =
-        err instanceof Error ? err.message : "An error occurred";
-      setError(errorMessage);
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      console.error("Error capturing frame:", error);
+      return null;
     }
-  };
+  }, [isCameraActive]);
+
+  const processImage = useCallback(
+    async (imageFile: File) => {
+      if (processingRef.current || loading) {
+        return; // Prevent multiple simultaneous requests
+      }
+
+      processingRef.current = true;
+      setLoading(true);
+
+      try {
+        const formData = new FormData();
+        formData.append("file", imageFile);
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+        const response = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeoutId);
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          console.error("API Error:", data);
+          throw new Error(data.error || "Upload failed");
+        }
+
+        if (data.plateText && data.plateText !== "Not Detected") {
+          onPlateDetected(data.plateText);
+          stopCamera();
+          onClose();
+        }
+      } catch (err: unknown) {
+        if (err instanceof Error && err.name === "AbortError") {
+          setError("Request timed out. Please try again.");
+        } else {
+          const errorMessage =
+            err instanceof Error ? err.message : "An error occurred";
+          setError(errorMessage);
+        }
+      } finally {
+        setLoading(false);
+        processingRef.current = false;
+      }
+    },
+    [loading, onPlateDetected, stopCamera, onClose]
+  );
 
   // Start camera when modal opens
   useEffect(() => {
@@ -168,27 +209,27 @@ export default function PlateScanner({
     } else {
       stopCamera();
     }
-  }, [isOpen]);
+  }, [isOpen, startCamera, stopCamera]);
 
   // Cleanup camera when component unmounts
   useEffect(() => {
     return () => {
       stopCamera();
     };
-  }, []);
+  }, [stopCamera]);
 
   // Start auto-detection when camera becomes active
   useEffect(() => {
     if (isCameraActive) {
-      // Start periodic capture every 2 seconds
+      // Start periodic capture every 3 seconds (reduced frequency for performance)
       intervalRef.current = setInterval(async () => {
-        if (!loading) {
+        if (!loading && !processingRef.current) {
           const capturedFile = await captureFrame();
           if (capturedFile) {
             processImage(capturedFile);
           }
         }
-      }, 2000);
+      }, 3000);
     }
 
     return () => {
@@ -197,7 +238,7 @@ export default function PlateScanner({
         intervalRef.current = null;
       }
     };
-  }, [isCameraActive, loading, processImage]);
+  }, [isCameraActive, loading, captureFrame, processImage]);
 
   if (!isOpen) return null;
 
@@ -268,76 +309,28 @@ export default function PlateScanner({
             </div>
 
             {/* Status indicator */}
-            <div className="absolute top-4 right-4">
-              <div className="flex items-center space-x-2 bg-black/50 backdrop-blur-sm rounded-full px-4 py-2">
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-sm text-white font-medium">Scanning</span>
-              </div>
-            </div>
-
-            {/* Instructions */}
-            <div className="absolute bottom-8 left-4 right-4">
-              <div className="bg-black/50 backdrop-blur-sm rounded-2xl p-4 text-center">
-                <p className="text-white text-sm font-medium">
-                  Point camera at license plate
-                </p>
-                <p className="text-white/70 text-xs mt-1">
-                  Auto-detecting every 2 seconds
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Error Display */}
-        {error && (
-          <div className="absolute top-20 left-4 right-4">
-            <div className="bg-red-500/90 backdrop-blur-sm rounded-xl p-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-5 h-5 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
-                  <span className="text-white text-xs font-bold">!</span>
+            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-center text-white">
+              {loading ? (
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <span>Processing...</span>
                 </div>
-                <p className="text-sm text-white font-medium">{error}</p>
-              </div>
+              ) : (
+                <span>Scanning for license plate...</span>
+              )}
             </div>
-          </div>
-        )}
 
-        {/* Loading Indicator */}
-        {loading && (
-          <div className="absolute top-32 left-4 right-4">
-            <div className="bg-blue-500/90 backdrop-blur-sm rounded-xl p-4">
-              <div className="flex items-center justify-center space-x-3">
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                <p className="text-sm text-white font-medium">
-                  Processing image...
-                </p>
+            {/* Error display */}
+            {error && (
+              <div className="absolute top-20 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded-lg max-w-sm text-center">
+                {error}
               </div>
-            </div>
+            )}
           </div>
         )}
       </div>
-
-      {/* Custom CSS for scanning animation */}
-      <style jsx>{`
-        @keyframes scan-line {
-          0% {
-            top: 0;
-            opacity: 1;
-          }
-          50% {
-            top: 50%;
-            opacity: 0.8;
-          }
-          100% {
-            top: 100%;
-            opacity: 1;
-          }
-        }
-        .animate-scan-line {
-          animation: scan-line 2s ease-in-out infinite;
-        }
-      `}</style>
     </div>
   );
-}
+});
+
+export default PlateScanner;

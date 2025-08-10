@@ -38,10 +38,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate it's an image
+    // Validate file type and size
     if (!file.type.startsWith("image/")) {
       return NextResponse.json(
-        { error: "Invalid image format" },
+        { error: "Invalid file type. Only images are allowed." },
+        { status: 400, headers: corsHeaders }
+      );
+    }
+
+    // Check file size (limit to 10MB)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      return NextResponse.json(
+        { error: "File too large. Maximum size is 10MB." },
         { status: 400, headers: corsHeaders }
       );
     }
@@ -53,9 +62,12 @@ export async function POST(request: NextRequest) {
     // Create blob directly from buffer (no file system operations)
     const blob = new Blob([buffer], { type: file.type || "image/jpeg" });
 
-    // Send to Plate Recognizer API
+    // Send to Plate Recognizer API with timeout
     const plateRecognizerFormData = new FormData();
     plateRecognizerFormData.append("upload", blob, "capture.jpg");
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
 
     const apiResponse = await fetch(
       "https://api.platerecognizer.com/v1/plate-reader/",
@@ -65,8 +77,11 @@ export async function POST(request: NextRequest) {
           Authorization: `Token ${apiKey}`,
         },
         body: plateRecognizerFormData,
+        signal: controller.signal,
       }
     );
+
+    clearTimeout(timeoutId);
 
     // Handle API response
     if (!apiResponse.ok) {
@@ -79,6 +94,13 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           { error: "Rate limit exceeded. Please try again in a moment." },
           { status: 429, headers: corsHeaders }
+        );
+      }
+
+      if (apiResponse.status === 401) {
+        return NextResponse.json(
+          { error: "Invalid API key. Please check configuration." },
+          { status: 401, headers: corsHeaders }
         );
       }
 
@@ -106,10 +128,27 @@ export async function POST(request: NextRequest) {
         processingTime: apiData.processing_time || 0,
         success: plateText !== "Not Detected",
       },
-      { headers: corsHeaders }
+      {
+        headers: {
+          ...corsHeaders,
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+        },
+      }
     );
   } catch (error) {
     console.error("Plate recognition error:", error);
+
+    // Handle timeout errors
+    if (error instanceof Error && error.name === "AbortError") {
+      return NextResponse.json(
+        {
+          error: "Request timed out. Please try again.",
+          details: "Plate recognition service is taking too long to respond.",
+          success: false,
+        },
+        { status: 408, headers: corsHeaders }
+      );
+    }
 
     // Return appropriate error response
     const errorMessage =
@@ -121,7 +160,13 @@ export async function POST(request: NextRequest) {
         details: errorMessage,
         success: false,
       },
-      { status: 500, headers: corsHeaders }
+      {
+        status: 500,
+        headers: {
+          ...corsHeaders,
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+        },
+      }
     );
   }
 }
