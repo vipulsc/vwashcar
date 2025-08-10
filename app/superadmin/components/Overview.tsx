@@ -103,6 +103,18 @@ export const Overview: React.FC<OverviewProps> = ({
           iconColor="text-purple-800"
         />
         <SmallStatCard
+          icon={DollarSign}
+          title="Today's Revenue"
+          value={`AED ${sites
+            .reduce((sum, site) => {
+              const today = new Date().getDate() - 1; // Array is 0-indexed
+              return sum + (site.dailyRevenue[today] || 0);
+            }, 0)
+            .toLocaleString()}`}
+          color="green"
+          iconColor="text-green-600"
+        />
+        <SmallStatCard
           icon={Award}
           title="Top Performer"
           value={
@@ -128,13 +140,6 @@ export const Overview: React.FC<OverviewProps> = ({
           value="68%"
           color="blue"
           iconColor="text-purple-800"
-        />
-        <SmallStatCard
-          icon={Target}
-          title="Peak Hours"
-          value="2-5 PM"
-          color="orange"
-          iconColor="text-red-500"
         />
       </div>
 

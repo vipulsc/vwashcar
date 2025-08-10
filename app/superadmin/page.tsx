@@ -21,6 +21,8 @@ import { CarsHistory } from "./components/CarsHistory";
 import { AddSiteModal } from "./components/modals/AddSiteModal";
 import { CredentialsModal } from "./components/modals/CredentialsModal";
 import { AddServiceModal } from "./components/modals/AddServiceModal";
+import { AddCoordinatorModal } from "./components/modals/AddCoordinatorModal";
+import { AddSalesmanModal } from "./components/modals/AddSalesmanModal";
 
 // Import types
 import {
@@ -1105,6 +1107,20 @@ const SuperAdminDashboard = () => {
         newServiceData={newServiceData}
         setNewServiceData={setNewServiceData}
         handleAddService={handleAddService}
+      />
+      <AddCoordinatorModal
+        showAddCoordinatorModal={showAddCoordinatorModal}
+        setShowAddCoordinatorModal={setShowAddCoordinatorModal}
+        newCoordinatorData={newCoordinatorData}
+        setNewCoordinatorData={setNewCoordinatorData}
+        handleAddCoordinator={handleAddCoordinator}
+      />
+      <AddSalesmanModal
+        showAddSalesmanModal={showAddSalesmanModal}
+        setShowAddSalesmanModal={setShowAddSalesmanModal}
+        newSalesmanData={newSalesmanData}
+        setNewSalesmanData={setNewSalesmanData}
+        handleAddSalesman={handleAddSalesman}
       />
       {/* Add other modals here as needed */}
     </div>

@@ -199,141 +199,11 @@ export const CarsHistory: React.FC<CarsHistoryProps> = ({
         <h2 className="text-xl font-bold" style={{ color: "#1e293b" }}>
           Cars History
         </h2>
-        <div className="flex items-center gap-3">
-          {/* Status Filter */}
-          <div className="relative" ref={statusFilterRef}>
-            <button
-              onClick={() => setShowStatusFilter(!showStatusFilter)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-200 shadow-sm border"
-            >
-              <span className="text-sm font-medium">
-                {historyFilter.status === "all"
-                  ? "Status"
-                  : historyFilter.status}
-              </span>
-              <ChevronDown className="h-4 w-4" />
-            </button>
-            {showStatusFilter && (
-              <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[150px]">
-                {[
-                  { value: "all", label: "All Status" },
-                  { value: "completed", label: "Completed" },
-                  { value: "in-progress", label: "In Progress" },
-                  { value: "waiting", label: "Waiting" },
-                ].map((option) => (
-                  <button
-                    key={option.value}
-                    onClick={() => {
-                      setHistoryFilter((prev) => ({
-                        ...prev,
-                        status: option.value,
-                      }));
-                      setShowStatusFilter(false);
-                    }}
-                    className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-50 transition-colors text-gray-700 ${
-                      historyFilter.status === option.value
-                        ? "bg-blue-50 text-blue-700"
-                        : ""
-                    }`}
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Time Period Filter */}
-          <div className="relative" ref={timeFilterRef}>
-            <button
-              onClick={() => setShowTimeFilter(!showTimeFilter)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-200 shadow-sm border"
-            >
-              <span className="text-sm font-medium">
-                {historyFilter.period === "all" ? "Time" : historyFilter.period}
-              </span>
-              <ChevronDown className="h-4 w-4" />
-            </button>
-            {showTimeFilter && (
-              <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[150px]">
-                {[
-                  { value: "all", label: "All Time" },
-                  { value: "today", label: "Today" },
-                  { value: "month", label: "This Month" },
-                  { value: "year", label: "This Year" },
-                ].map((option) => (
-                  <button
-                    key={option.value}
-                    onClick={() => {
-                      setHistoryFilter((prev) => ({
-                        ...prev,
-                        period: option.value,
-                      }));
-                      setShowTimeFilter(false);
-                    }}
-                    className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-50 transition-colors text-gray-700 ${
-                      historyFilter.period === option.value
-                        ? "bg-blue-50 text-blue-700"
-                        : ""
-                    }`}
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Site Filter */}
-          <div className="relative" ref={siteFilterRef}>
-            <button
-              onClick={() => setShowSiteFilter(!showSiteFilter)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-200 shadow-sm border"
-            >
-              <span className="text-sm font-medium">
-                {historyFilter.site === "all" ? "Site" : historyFilter.site}
-              </span>
-              <ChevronDown className="h-4 w-4" />
-            </button>
-            {showSiteFilter && (
-              <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[150px] max-h-48 overflow-y-auto">
-                <button
-                  onClick={() => {
-                    setHistoryFilter((prev) => ({ ...prev, site: "all" }));
-                    setShowSiteFilter(false);
-                  }}
-                  className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-50 transition-colors text-gray-700 ${
-                    historyFilter.site === "all"
-                      ? "bg-blue-50 text-blue-700"
-                      : ""
-                  }`}
-                >
-                  All Sites
-                </button>
-                {uniqueSites.map((site) => (
-                  <button
-                    key={site}
-                    onClick={() => {
-                      setHistoryFilter((prev) => ({ ...prev, site }));
-                      setShowSiteFilter(false);
-                    }}
-                    className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-50 transition-colors text-gray-700 ${
-                      historyFilter.site === site
-                        ? "bg-blue-50 text-blue-700"
-                        : ""
-                    }`}
-                  >
-                    {site}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        {/* Total Cars */}
         <div
           className="p-4 rounded-lg border transition-all duration-200 shadow-sm"
           style={{
@@ -364,6 +234,7 @@ export const CarsHistory: React.FC<CarsHistoryProps> = ({
           </div>
         </div>
 
+        {/* Total Revenue */}
         <div
           className="p-4 rounded-lg border transition-all duration-200 shadow-sm"
           style={{
@@ -388,53 +259,56 @@ export const CarsHistory: React.FC<CarsHistoryProps> = ({
           </div>
         </div>
 
-        <div
-          className="p-4 rounded-lg border transition-all duration-200 shadow-sm"
-          style={{
-            backgroundColor: "#ffffff",
-            borderColor: "#e2e8f0",
-            borderWidth: "1px",
-          }}
-        >
-          <div className="flex items-center">
-            <CheckCircle
-              className="h-6 w-6 mr-3"
-              style={{ color: "#10b981" }}
-            />
-            <div>
-              <p
-                className="text-xs uppercase tracking-wider font-medium"
-                style={{ color: "#64748b" }}
-              >
-                Completed
-              </p>
-              <p className="text-lg font-bold" style={{ color: "#1e293b" }}>
-                {completedCars}
-              </p>
+        {/* Completed and Active - Always on same line */}
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 col-span-1 sm:col-span-2 lg:col-span-2">
+          <div
+            className="p-4 rounded-lg border transition-all duration-200 shadow-sm"
+            style={{
+              backgroundColor: "#ffffff",
+              borderColor: "#e2e8f0",
+              borderWidth: "1px",
+            }}
+          >
+            <div className="flex items-center">
+              <CheckCircle
+                className="h-6 w-6 mr-3"
+                style={{ color: "#10b981" }}
+              />
+              <div>
+                <p
+                  className="text-xs uppercase tracking-wider font-medium"
+                  style={{ color: "#64748b" }}
+                >
+                  Completed
+                </p>
+                <p className="text-lg font-bold" style={{ color: "#1e293b" }}>
+                  {completedCars}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div
-          className="p-4 rounded-lg border transition-all duration-200 shadow-sm"
-          style={{
-            backgroundColor: "#ffffff",
-            borderColor: "#e2e8f0",
-            borderWidth: "1px",
-          }}
-        >
-          <div className="flex items-center">
-            <Clock className="h-6 w-6 mr-3" style={{ color: "#f59e0b" }} />
-            <div>
-              <p
-                className="text-xs uppercase tracking-wider font-medium"
-                style={{ color: "#64748b" }}
-              >
-                Active
-              </p>
-              <p className="text-lg font-bold" style={{ color: "#1e293b" }}>
-                {activeCars}
-              </p>
+          <div
+            className="p-4 rounded-lg border transition-all duration-200 shadow-sm"
+            style={{
+              backgroundColor: "#ffffff",
+              borderColor: "#e2e8f0",
+              borderWidth: "1px",
+            }}
+          >
+            <div className="flex items-center">
+              <Clock className="h-6 w-6 mr-3" style={{ color: "#f59e0b" }} />
+              <div>
+                <p
+                  className="text-xs uppercase tracking-wider font-medium"
+                  style={{ color: "#64748b" }}
+                >
+                  Active
+                </p>
+                <p className="text-lg font-bold" style={{ color: "#1e293b" }}>
+                  {activeCars}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -471,14 +345,14 @@ export const CarsHistory: React.FC<CarsHistoryProps> = ({
           .map((car) => (
             <div
               key={car.id}
-              className="p-6 rounded-lg border transition-all duration-200 shadow-sm"
+              className="p-4 sm:p-6 rounded-lg border transition-all duration-200 shadow-sm"
               style={{
                 backgroundColor: "#ffffff",
                 borderColor: "#e2e8f0",
                 borderWidth: "1px",
               }}
             >
-              <div className="flex items-start justify-between mb-4">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-0 mb-4">
                 <div className="flex items-center">
                   <div className="relative mr-3">
                     {getCarIcon(car.carNumber)}
@@ -487,27 +361,31 @@ export const CarsHistory: React.FC<CarsHistoryProps> = ({
                       style={{ color: "#06b6d4" }}
                     />
                   </div>
-                  <div>
-                    <h3 className="font-semibold" style={{ color: "#1e293b" }}>
-                      {car.carNumber}
-                    </h3>
-                    <p className="text-sm" style={{ color: "#64748b" }}>
-                      {car.site} • {car.timestamp}
-                    </p>
+                  <div className="flex items-center gap-3">
+                    <div>
+                      <h3
+                        className="font-semibold"
+                        style={{ color: "#1e293b" }}
+                      >
+                        {car.carNumber}
+                      </h3>
+                      <p className="text-sm" style={{ color: "#64748b" }}>
+                        {car.site} • {car.timestamp}
+                      </p>
+                    </div>
+                    <span
+                      className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${getStatusColor(
+                        car.status
+                      )}`}
+                    >
+                      {car.status}
+                    </span>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span
-                    className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${getStatusColor(
-                      car.status
-                    )}`}
-                  >
-                    {car.status}
-                  </span>
-
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                   {/* Smooth Sliding Status Toggle */}
                   <div
-                    className="flex rounded-xl p-1 backdrop-blur-md border border-white/20 shadow-lg relative overflow-hidden"
+                    className="flex rounded-xl p-1 backdrop-blur-md border border-white/20 shadow-lg relative overflow-hidden min-w-[240px]"
                     style={{
                       backgroundColor: "rgba(255, 255, 255, 0.1)",
                       boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
@@ -517,10 +395,10 @@ export const CarsHistory: React.FC<CarsHistoryProps> = ({
                     <div
                       className={`absolute top-1 bottom-1 rounded-lg transition-all duration-500 ease-out ${
                         car.status === "waiting"
-                          ? "left-1 w-[calc(33.333%-0.25rem)] bg-yellow-500"
+                          ? "left-1 w-[calc(33.333%-0.5rem)] bg-yellow-500"
                           : car.status === "in-progress"
-                          ? "left-[calc(33.333%+0.25rem)] w-[calc(33.333%-0.25rem)] bg-orange-500"
-                          : "left-[calc(66.666%+0.25rem)] w-[calc(33.333%-0.25rem)] bg-green-500"
+                          ? "left-[calc(33.333%+0.5rem)] w-[calc(33.333%-0.5rem)] bg-orange-500"
+                          : "left-[calc(66.666%+0.5rem)] w-[calc(33.333%-0.5rem)] bg-green-500"
                       }`}
                       style={{
                         backdropFilter: "blur(10px)",
@@ -530,7 +408,7 @@ export const CarsHistory: React.FC<CarsHistoryProps> = ({
 
                     <button
                       onClick={() => updateCarStatus(car.id, "waiting")}
-                      className="relative px-4 py-2 text-xs font-medium rounded-lg transition-all duration-300 z-10"
+                      className="relative flex-1 px-3 py-1.5 sm:py-2 text-xs font-medium rounded-lg transition-all duration-300 z-10 whitespace-nowrap min-w-0"
                       style={{
                         color: car.status === "waiting" ? "#ffffff" : "#6b7280",
                       }}
@@ -539,7 +417,7 @@ export const CarsHistory: React.FC<CarsHistoryProps> = ({
                     </button>
                     <button
                       onClick={() => updateCarStatus(car.id, "in-progress")}
-                      className="relative px-4 py-2 text-xs font-medium rounded-lg transition-all duration-300 z-10"
+                      className="relative flex-1 px-3 py-1.5 sm:py-2 text-xs font-medium rounded-lg transition-all duration-300 z-10 whitespace-nowrap min-w-0"
                       style={{
                         color:
                           car.status === "in-progress" ? "#ffffff" : "#6b7280",
@@ -549,7 +427,7 @@ export const CarsHistory: React.FC<CarsHistoryProps> = ({
                     </button>
                     <button
                       onClick={() => updateCarStatus(car.id, "completed")}
-                      className="relative px-4 py-2 text-xs font-medium rounded-lg transition-all duration-300 z-10"
+                      className="relative flex-1 px-3 py-1.5 sm:py-2 text-xs font-medium rounded-lg transition-all duration-300 z-10 whitespace-nowrap min-w-0"
                       style={{
                         color:
                           car.status === "completed" ? "#ffffff" : "#6b7280",
@@ -563,7 +441,7 @@ export const CarsHistory: React.FC<CarsHistoryProps> = ({
                     car.status === "waiting") && (
                     <button
                       onClick={() => handleEditCar(car)}
-                      className="px-3 py-2 text-xs font-medium rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-all duration-200 shadow-sm hover:shadow-md"
+                      className="px-2 sm:px-3 py-1.5 sm:py-2 text-xs font-medium rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-all duration-200 shadow-sm hover:shadow-md"
                     >
                       Edit
                     </button>
@@ -571,7 +449,7 @@ export const CarsHistory: React.FC<CarsHistoryProps> = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 <div>
                   <p
                     className="text-xs uppercase tracking-wider font-medium mb-1"

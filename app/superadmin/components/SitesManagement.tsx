@@ -33,6 +33,38 @@ export const SitesManagement: React.FC<SitesManagementProps> = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [showVisibilityModal, setShowVisibilityModal] = useState(false);
   const [selectedSite, setSelectedSite] = useState<Site | null>(null);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [showFinalDeleteConfirmation, setShowFinalDeleteConfirmation] =
+    useState(false);
+  const [siteToDelete, setSiteToDelete] = useState<Site | null>(null);
+
+  const handleDeleteClick = (site: Site) => {
+    setSiteToDelete(site);
+    setShowDeleteConfirmation(true);
+  };
+
+  const handleConfirmDelete = () => {
+    setShowDeleteConfirmation(false);
+    setShowFinalDeleteConfirmation(true);
+  };
+
+  const handleFinalConfirmDelete = () => {
+    if (siteToDelete) {
+      deleteSite(siteToDelete.id);
+      setShowFinalDeleteConfirmation(false);
+      setSiteToDelete(null);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteConfirmation(false);
+    setSiteToDelete(null);
+  };
+
+  const handleCancelFinalDelete = () => {
+    setShowFinalDeleteConfirmation(false);
+    setSiteToDelete(null);
+  };
 
   return (
     <div className="space-y-6">
@@ -142,7 +174,7 @@ export const SitesManagement: React.FC<SitesManagementProps> = ({
                     <Edit className="h-4 w-4" />
                   </button>
                   <button
-                    onClick={() => deleteSite(site.id)}
+                    onClick={() => handleDeleteClick(site)}
                     className="p-2 rounded-lg transition-all duration-200"
                     style={{
                       backgroundColor: "var(--auth-error)",
@@ -313,6 +345,128 @@ export const SitesManagement: React.FC<SitesManagementProps> = ({
               >
                 {selectedSite.isActive ? "Deactivate" : "Activate"}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirmation && siteToDelete && (
+        <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
+          <div
+            className="bg-white bg-opacity-80 backdrop-blur-lg rounded-lg p-6 max-w-md w-full mx-4 shadow-xl border"
+            style={{ borderColor: "#e2e8f0", borderWidth: "1px" }}
+          >
+            <div className="flex items-center mb-4">
+              <div
+                className="p-2 rounded-full mr-3"
+                style={{
+                  backgroundColor: "#fef2f2",
+                  color: "#dc2626",
+                }}
+              >
+                <AlertTriangle className="h-5 w-5" />
+              </div>
+              <h3
+                className="text-lg font-semibold"
+                style={{ color: "#1e293b" }}
+              >
+                Delete Site
+              </h3>
+            </div>
+
+            <div className="mb-6">
+              <p className="text-sm mb-3" style={{ color: "#64748b" }}>
+                Are you sure you want to permanently delete the site{" "}
+                <span className="font-semibold" style={{ color: "#1e293b" }}>
+                  &ldquo;{siteToDelete.name}&rdquo;
+                </span>
+                ?
+              </p>
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                <p className="text-xs text-red-700 font-medium mb-1">
+                  ⚠️ This action cannot be undone
+                </p>
+                <p className="text-xs text-red-600">
+                  This will permanently remove the site and all associated data
+                  including:
+                </p>
+                <ul className="text-xs text-red-600 mt-1 ml-4 list-disc">
+                  <li>Site configuration and settings</li>
+                  <li>Revenue and transaction history</li>
+                  <li>Coordinator and salesman assignments</li>
+                  <li>All car wash records</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="flex space-x-3">
+              <button
+                onClick={handleCancelDelete}
+                className="flex-1 px-4 py-2 rounded-lg border transition-all duration-200"
+                style={{
+                  backgroundColor: "#ffffff",
+                  borderColor: "#e2e8f0",
+                  color: "#64748b",
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmDelete}
+                className="flex-1 px-4 py-2 rounded-lg transition-all duration-200"
+                style={{
+                  backgroundColor: "#dc2626",
+                  color: "white",
+                }}
+              >
+                Delete Site
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Final Delete Confirmation Modal */}
+      {showFinalDeleteConfirmation && siteToDelete && (
+        <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
+          <div
+            className="bg-white bg-opacity-80 backdrop-blur-lg rounded-lg p-4 max-w-sm w-full mx-4 shadow-xl border"
+            style={{ borderColor: "#e2e8f0", borderWidth: "1px" }}
+          >
+            <div className="text-center">
+              <h3
+                className="text-lg font-semibold mb-4"
+                style={{ color: "#1e293b" }}
+              >
+                Are you sure?
+              </h3>
+              <p className="text-sm mb-6" style={{ color: "#64748b" }}>
+                Delete site &ldquo;{siteToDelete.name}&rdquo;?
+              </p>
+              <div className="flex space-x-3">
+                <button
+                  onClick={handleCancelFinalDelete}
+                  className="flex-1 px-4 py-2 rounded-lg border transition-all duration-200"
+                  style={{
+                    backgroundColor: "#ffffff",
+                    borderColor: "#e2e8f0",
+                    color: "#64748b",
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleFinalConfirmDelete}
+                  className="flex-1 px-4 py-2 rounded-lg transition-all duration-200"
+                  style={{
+                    backgroundColor: "#dc2626",
+                    color: "white",
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
         </div>

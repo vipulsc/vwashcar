@@ -245,13 +245,30 @@ export const SalesmenManagement: React.FC<SalesmenManagementProps> = ({
               </h3>
             </div>
 
-            <p className="text-sm mb-6" style={{ color: "#64748b" }}>
-              Are you sure you want to delete the salesman{" "}
-              <span className="font-semibold" style={{ color: "#1e293b" }}>
-                &ldquo;{selectedSalesman.name}&rdquo;
-              </span>
-              ?
-            </p>
+            <div className="mb-6">
+              <p className="text-sm mb-3" style={{ color: "#64748b" }}>
+                Are you sure you want to permanently delete the salesman{" "}
+                <span className="font-semibold" style={{ color: "#1e293b" }}>
+                  &ldquo;{selectedSalesman.name}&rdquo;
+                </span>
+                ?
+              </p>
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                <p className="text-xs text-red-700 font-medium mb-1">
+                  ⚠️ This action cannot be undone
+                </p>
+                <p className="text-xs text-red-600">
+                  This will permanently remove the salesman and all associated
+                  data including:
+                </p>
+                <ul className="text-xs text-red-600 mt-1 ml-4 list-disc">
+                  <li>Salesman account and login credentials</li>
+                  <li>Site assignments and permissions</li>
+                  <li>Sales performance history</li>
+                  <li>Transaction processing access</li>
+                </ul>
+              </div>
+            </div>
 
             <div className="flex space-x-3">
               <button
