@@ -12,6 +12,10 @@ interface ServiceStepProps {
     addOns: string[];
     paymentMethod: string;
     plateImage: File | null;
+    manualPricing: {
+      basePackagePrice: number;
+      addOnPrices: { [key: string]: number };
+    };
   };
   setFormData: React.Dispatch<
     React.SetStateAction<ServiceStepProps["formData"]>
@@ -55,6 +59,8 @@ export default function ServiceStep({
   formData,
   setFormData,
 }: ServiceStepProps) {
+  const isOtherVehicle = formData.carType === "other";
+
   const selectPackage = (packageId: string) => {
     setFormData((prev) => ({
       ...prev,
@@ -71,7 +77,33 @@ export default function ServiceStep({
     }));
   };
 
+  const updateManualBasePrice = (price: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      manualPricing: {
+        ...prev.manualPricing,
+        basePackagePrice: price,
+      },
+    }));
+  };
+
+  const updateManualAddOnPrice = (addOnId: string, price: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      manualPricing: {
+        ...prev.manualPricing,
+        addOnPrices: {
+          ...prev.manualPricing.addOnPrices,
+          [addOnId]: price,
+        },
+      },
+    }));
+  };
+
   const getBasePrice = () => {
+    if (isOtherVehicle && formData.manualPricing.basePackagePrice > 0) {
+      return formData.manualPricing.basePackagePrice;
+    }
     const selectedPackage = servicePackages.find(
       (p) => p.id === formData.selectedPackage
     );
@@ -80,6 +112,9 @@ export default function ServiceStep({
 
   const getAddOnsPrice = () => {
     return formData.addOns.reduce((total, addOnId) => {
+      if (isOtherVehicle && formData.manualPricing.addOnPrices[addOnId]) {
+        return total + formData.manualPricing.addOnPrices[addOnId];
+      }
       const addOn = addOnServices.find((a) => a.id === addOnId);
       return total + (addOn?.price || 0);
     }, 0);
@@ -131,9 +166,26 @@ export default function ServiceStep({
                     <p className="text-sm text-gray-600">{pkg.description}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-blue-600 text-xl">
-                      AED {pkg.price}
-                    </p>
+                    {isOtherVehicle && isSelected ? (
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm text-gray-500">AED</span>
+                        <input
+                          type="number"
+                          value={formData.manualPricing.basePackagePrice || ""}
+                          onChange={(e) =>
+                            updateManualBasePrice(Number(e.target.value) || 0)
+                          }
+                          onClick={(e) => e.stopPropagation()}
+                          className="w-20 px-2 py-1 border border-gray-300 rounded text-center font-bold text-blue-600 text-xl"
+                          placeholder="0"
+                          min="0"
+                        />
+                      </div>
+                    ) : (
+                      <p className="font-bold text-blue-600 text-xl">
+                        AED {pkg.price}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -170,9 +222,31 @@ export default function ServiceStep({
                     <h4 className="font-semibold text-gray-900 text-sm leading-tight mb-2">
                       {addOn.name}
                     </h4>
-                    <p className="font-bold text-blue-600 text-sm">
-                      +AED {addOn.price}
-                    </p>
+                    {isOtherVehicle && isSelected ? (
+                      <div className="flex items-center justify-center space-x-1">
+                        <span className="text-xs text-gray-500">+AED</span>
+                        <input
+                          type="number"
+                          value={
+                            formData.manualPricing.addOnPrices[addOn.id] || ""
+                          }
+                          onChange={(e) =>
+                            updateManualAddOnPrice(
+                              addOn.id,
+                              Number(e.target.value) || 0
+                            )
+                          }
+                          onClick={(e) => e.stopPropagation()}
+                          className="w-16 px-1 py-1 border border-gray-300 rounded text-center font-bold text-blue-600 text-sm"
+                          placeholder="0"
+                          min="0"
+                        />
+                      </div>
+                    ) : (
+                      <p className="font-bold text-blue-600 text-sm">
+                        +AED {addOn.price}
+                      </p>
+                    )}
                   </div>
                 </div>
               );

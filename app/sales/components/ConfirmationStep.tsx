@@ -12,6 +12,10 @@ interface ConfirmationStepProps {
     selectedPackage: string;
     addOns: string[];
     paymentMethod: string;
+    manualPricing: {
+      basePackagePrice: number;
+      addOnPrices: { [key: string]: number };
+    };
   };
   totalPrice: number;
   onBackToReview: () => void;

@@ -10,6 +10,10 @@ interface ReviewStepProps {
     selectedPackage: string;
     addOns: string[];
     paymentMethod: string;
+    manualPricing: {
+      basePackagePrice: number;
+      addOnPrices: { [key: string]: number };
+    };
   };
   totalPrice: number;
   onConfirm: () => void;
@@ -54,7 +58,12 @@ export default function ReviewStep({
   totalPrice,
   onConfirm,
 }: ReviewStepProps) {
+  const isOtherVehicle = formData.carType === "other";
+
   const getBasePrice = () => {
+    if (isOtherVehicle && formData.manualPricing.basePackagePrice > 0) {
+      return formData.manualPricing.basePackagePrice;
+    }
     const selectedPackage = servicePackages.find(
       (p) => p.id === formData.selectedPackage
     );
@@ -63,6 +72,9 @@ export default function ReviewStep({
 
   const getAddOnsPrice = () => {
     return formData.addOns.reduce((total, addOnId) => {
+      if (isOtherVehicle && formData.manualPricing.addOnPrices[addOnId]) {
+        return total + formData.manualPricing.addOnPrices[addOnId];
+      }
       const addOn = addOnServices.find((a) => a.id === addOnId);
       return total + (addOn?.price || 0);
     }, 0);

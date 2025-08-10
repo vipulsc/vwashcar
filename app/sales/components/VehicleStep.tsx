@@ -23,6 +23,10 @@ interface VehicleStepProps {
     addOns: string[];
     paymentMethod: string;
     plateImage: File | null;
+    manualPricing: {
+      basePackagePrice: number;
+      addOnPrices: { [key: string]: number };
+    };
   };
   setFormData: React.Dispatch<
     React.SetStateAction<VehicleStepProps["formData"]>

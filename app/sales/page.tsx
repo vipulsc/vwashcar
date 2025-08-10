@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { ChevronRight, ChevronLeft, LogOut } from "lucide-react";
+import { ChevronRight, ChevronLeft, LogOut, ChevronDown } from "lucide-react";
 import VehicleStep from "./components/VehicleStep";
 import ServiceStep from "./components/ServiceStep";
 import PaymentStep from "./components/PaymentStep";
@@ -19,6 +19,10 @@ interface BookingFormData {
   addOns: string[];
   paymentMethod: string;
   plateImage: File | null;
+  manualPricing: {
+    basePackagePrice: number;
+    addOnPrices: { [key: string]: number };
+  };
 }
 
 interface QueueItem {
@@ -40,6 +44,7 @@ export default function SalesPage() {
     "all" | "waiting" | "in-progress" | "completed"
   >("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const [showAccountMenu, setShowAccountMenu] = useState(false);
 
   const [formData, setFormData] = useState<BookingFormData>({
     plateNumber: "",
@@ -50,6 +55,10 @@ export default function SalesPage() {
     addOns: [],
     paymentMethod: "",
     plateImage: null,
+    manualPricing: {
+      basePackagePrice: 0,
+      addOnPrices: {},
+    },
   });
   const [bookingId, setBookingId] = useState("");
   const [isConfirmed, setIsConfirmed] = useState(false);
@@ -125,6 +134,10 @@ export default function SalesPage() {
       addOns: [],
       paymentMethod: "",
       plateImage: null,
+      manualPricing: {
+        basePackagePrice: 0,
+        addOnPrices: {},
+      },
     });
     setIsConfirmed(false);
     setBookingId("");
@@ -145,6 +158,10 @@ export default function SalesPage() {
       addOns: [],
       paymentMethod: "",
       plateImage: null,
+      manualPricing: {
+        basePackagePrice: 0,
+        addOnPrices: {},
+      },
     });
     setIsConfirmed(false);
     setBookingId("");
@@ -178,6 +195,12 @@ export default function SalesPage() {
 
   // Calculate total price
   const getBasePrice = () => {
+    const isOtherVehicle = formData.carType === "other";
+
+    if (isOtherVehicle && formData.manualPricing.basePackagePrice > 0) {
+      return formData.manualPricing.basePackagePrice;
+    }
+
     const servicePackages = [
       { id: "basic", price: 25 },
       { id: "jack", price: 45 },
@@ -190,6 +213,7 @@ export default function SalesPage() {
   };
 
   const getAddOnsPrice = () => {
+    const isOtherVehicle = formData.carType === "other";
     const addOnServices = [
       { id: "wax", price: 35 },
       { id: "polish", price: 25 },
@@ -199,6 +223,9 @@ export default function SalesPage() {
       { id: "protection", price: 50 },
     ];
     return formData.addOns.reduce((total, addOnId) => {
+      if (isOtherVehicle && formData.manualPricing.addOnPrices[addOnId]) {
+        return total + formData.manualPricing.addOnPrices[addOnId];
+      }
       const addOn = addOnServices.find((a) => a.id === addOnId);
       return total + (addOn?.price || 0);
     }, 0);
@@ -258,10 +285,10 @@ export default function SalesPage() {
               {/* Empty div for spacing */}
             </div>
 
-            {/* User Avatar and Sign Out */}
+            {/* User Avatar and Dropdown */}
             <div className="relative">
               <button
-                onClick={handleSignOut}
+                onClick={() => setShowAccountMenu(!showAccountMenu)}
                 className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
               >
                 <div
@@ -272,11 +299,34 @@ export default function SalesPage() {
                 </div>
                 <div className="hidden sm:block text-left">
                   <p className="text-sm font-medium text-gray-900">
-                    Sales Staff
+                    Sales User
                   </p>
                 </div>
-                <LogOut className="h-4 w-4 text-gray-500" />
+                <ChevronDown
+                  className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${
+                    showAccountMenu ? "rotate-180" : ""
+                  }`}
+                />
               </button>
+
+              {/* Dropdown Menu */}
+              {showAccountMenu && (
+                <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl border border-gray-200 py-2 z-50 animate-scaleIn shadow-lg">
+                  <div className="px-4 py-3 border-b border-gray-100">
+                    <p className="text-sm font-medium text-gray-900">
+                      Sales User
+                    </p>
+                    <p className="text-sm text-gray-500">sales@vwashcar.com</p>
+                  </div>
+                  <button
+                    onClick={handleSignOut}
+                    className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2 transition-smooth"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span>Sign out</span>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -384,6 +434,14 @@ export default function SalesPage() {
           )}
         </div>
       </main>
+
+      {/* Click outside to close dropdown */}
+      {showAccountMenu && (
+        <div
+          className="fixed inset-0 z-40"
+          onClick={() => setShowAccountMenu(false)}
+        />
+      )}
     </div>
   );
 }

@@ -41,11 +41,11 @@ export const QueueManagement: React.FC<QueueManagementProps> = ({
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [carToComplete, setCarToComplete] = useState<string | null>(null);
   const [completionMessage, setCompletionMessage] = useState("");
-  // Filter queue to show only today&apos;s data
+  // Filter queue to show only today's data
   const todayQueue = queue.filter((car) => {
-    // Since arrivalTime is just a time string (e.g., &quot;09:30 AM&quot;),
-    // we&apos;ll show all cars for now. In a real app, you&apos;d have full dates.
-    // For demo purposes, we&apos;ll show all cars in the queue
+    // Since arrivalTime is just a time string (e.g., "09:30 AM"),
+    // we'll show all cars for now. In a real app, you'd have full dates.
+    // For demo purposes, we'll show all cars in the queue
     return true;
   });
 
