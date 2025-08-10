@@ -46,7 +46,10 @@ export const Overview: React.FC<OverviewProps> = ({
           icon={MapPin}
           title="Total Sites"
           value={sites.length.toString()}
-          subtitle={`${sites.filter((s) => s.isActive).length} active locations`}
+          subtitle={`${
+            sites.filter((s) => s.isActive).length
+          } active locations`}
+          iconColor="text-purple-800"
         />
         <StatCard
           icon={Users}
@@ -55,6 +58,7 @@ export const Overview: React.FC<OverviewProps> = ({
           subtitle={`${
             coordinators.filter((c) => c.status === "active").length
           } active`}
+          iconColor="text-purple-800"
         />
         <StatCard
           icon={UserCheck}
@@ -63,6 +67,7 @@ export const Overview: React.FC<OverviewProps> = ({
           subtitle={`${
             salesmen.filter((s) => s.status === "active").length
           } active`}
+          iconColor="text-purple-800"
         />
         <RevenueStatCard
           icon={DollarSign}
@@ -77,6 +82,7 @@ export const Overview: React.FC<OverviewProps> = ({
             .reduce((sum, site) => sum + site.totalCardRevenue, 0)
             .toLocaleString()}`}
           subtitle="All time earnings"
+          iconColor="text-green-600"
         />
       </div>
 
@@ -87,36 +93,48 @@ export const Overview: React.FC<OverviewProps> = ({
           title="Monthly Growth"
           value="+12.5%"
           color="green"
+          iconColor="text-purple-800"
         />
         <SmallStatCard
           icon={Car}
           title="Cars/Day Avg"
           value="24"
           color="blue"
+          iconColor="text-purple-800"
         />
         <SmallStatCard
-          icon={Clock}
-          title="Avg Service Time"
-          value="22 min"
+          icon={Award}
+          title="Top Performer"
+          value={
+            sites.length > 0
+              ? sites.reduce((maxSite, site) =>
+                  site.totalRevenue > maxSite.totalRevenue ? site : maxSite
+                ).name
+              : "N/A"
+          }
           color="purple"
+          iconColor="text-purple-800"
         />
         <SmallStatCard
           icon={DollarSign}
           title="Revenue/Car"
           value="AED 78"
           color="green"
+          iconColor="text-green-600"
         />
         <SmallStatCard
           icon={RefreshCw}
           title="Return Rate"
           value="68%"
           color="blue"
+          iconColor="text-purple-800"
         />
         <SmallStatCard
           icon={Target}
           title="Peak Hours"
           value="2-5 PM"
           color="orange"
+          iconColor="text-red-500"
         />
       </div>
 
@@ -192,31 +210,31 @@ export const Overview: React.FC<OverviewProps> = ({
           <div className="grid grid-cols-2 gap-4">
             <button
               onClick={() => setShowAddSiteModal(true)}
-              className="flex flex-col items-center justify-center p-4 bg-green-50 text-green-700 rounded-xl hover:bg-green-100 transition-colors"
+              className="flex flex-col items-center justify-center p-4 bg-purple-50 text-purple-700 rounded-xl hover:bg-purple-100 transition-colors"
             >
               <Plus className="h-6 w-6 mb-2" />
               <span className="font-semibold text-sm">Add Site</span>
             </button>
             <button
               onClick={() => setShowAddCoordinatorModal(true)}
-              className="flex flex-col items-center justify-center p-4 bg-green-50 text-green-700 rounded-xl hover:bg-green-100 transition-colors"
+              className="flex flex-col items-center justify-center p-4 bg-purple-50 text-purple-700 rounded-xl hover:bg-purple-100 transition-colors"
             >
               <Users className="h-6 w-6 mb-2" />
               <span className="font-semibold text-sm">Add Coordinator</span>
             </button>
             <button
               onClick={() => setShowAddSalesmanModal(true)}
-              className="flex flex-col items-center justify-center p-4 bg-green-50 text-green-700 rounded-xl hover:bg-green-100 transition-colors"
+              className="flex flex-col items-center justify-center p-4 bg-purple-50 text-purple-700 rounded-xl hover:bg-purple-100 transition-colors"
             >
               <UserCheck className="h-6 w-6 mb-2" />
               <span className="font-semibold text-sm">Add Salesman</span>
             </button>
             <button
-              onClick={() => setActiveTab("analytics")}
-              className="flex flex-col items-center justify-center p-4 bg-green-50 text-green-700 rounded-xl hover:bg-green-100 transition-colors"
+              onClick={() => setActiveTab("services")}
+              className="flex flex-col items-center justify-center p-4 bg-purple-50 text-purple-700 rounded-xl hover:bg-purple-100 transition-colors"
             >
-              <BarChart3 className="h-6 w-6 mb-2" />
-              <span className="font-semibold text-sm">Analytics</span>
+              <Plus className="h-6 w-6 mb-2" />
+              <span className="font-semibold text-sm">Add Services</span>
             </button>
           </div>
         </div>

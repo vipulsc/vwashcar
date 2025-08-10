@@ -78,6 +78,7 @@ export interface StatCardProps {
   value: string;
   subtitle?: string;
   color?: string;
+  iconColor?: string;
 }
 
 export interface RevenueStatCardProps {
@@ -87,6 +88,7 @@ export interface RevenueStatCardProps {
   cashValue: string;
   cardValue: string;
   subtitle?: string;
+  iconColor?: string;
 }
 
 export interface SmallStatCardProps {
@@ -94,6 +96,7 @@ export interface SmallStatCardProps {
   title: string;
   value: string;
   color?: string;
+  iconColor?: string;
 }
 
 export interface TabButtonProps {

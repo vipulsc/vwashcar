@@ -41,9 +41,17 @@ export const Navigation: React.FC<NavigationProps> = ({
             <div className="flex items-center">
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 mr-2"
+                className="lg:hidden p-2 rounded-md mr-2 transition-all duration-200 hover:scale-105"
+                style={{
+                  color: "#6b7280",
+                  backgroundColor: "rgba(255, 255, 255, 0.8)",
+                }}
               >
-                <Menu className="h-5 w-5" />
+                <Menu
+                  className={`h-5 w-5 transition-transform duration-200 ${
+                    isMobileMenuOpen ? "rotate-90" : "rotate-0"
+                  }`}
+                />
               </button>
             </div>
 
@@ -53,7 +61,10 @@ export const Navigation: React.FC<NavigationProps> = ({
                 onClick={() => setShowUserDropdown(!showUserDropdown)}
                 className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
               >
-                <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
+                <div
+                  className="w-8 h-8 rounded-full flex items-center justify-center"
+                  style={{ backgroundColor: "var(--auth-purple)" }}
+                >
                   {user.avatar ? (
                     <img
                       src={user.avatar}
@@ -104,19 +115,21 @@ export const Navigation: React.FC<NavigationProps> = ({
 
       {/* Mobile Navigation Sidebar */}
       <div
-        className={`fixed inset-0 z-50 lg:hidden ${
-          isMobileMenuOpen ? "block" : "hidden"
+        className={`fixed inset-0 z-50 lg:hidden transition-opacity duration-200 ${
+          isMobileMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       >
         <div
-          className="fixed inset-0 backdrop-blur-md"
+          className={`fixed inset-0 backdrop-blur-md ${
+            isMobileMenuOpen ? "opacity-100" : "opacity-0"
+          }`}
           style={{
-            backgroundColor: "rgba(30, 58, 138, 0.3)",
+            backgroundColor: "rgba(255, 255, 255, 0.3)",
           }}
           onClick={() => setIsMobileMenuOpen(false)}
         ></div>
         <div
-          className={`fixed top-0 left-0 w-80 h-full bg-white shadow-xl transition-transform duration-300 ease-out transform ${
+          className={`fixed top-0 left-0 w-80 h-full bg-white shadow-xl transition-all duration-200 ease-out transform ${
             isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
@@ -156,9 +169,9 @@ export const Navigation: React.FC<NavigationProps> = ({
                     : "top-[calc(83.333%+0.5rem)] h-[calc(16.666%-0.5rem)]"
                 }`}
                 style={{
-                  backgroundColor: "rgba(34, 197, 94, 0.9)",
+                  backgroundColor: "rgba(37, 99, 235, 0.9)",
                   backdropFilter: "blur(10px)",
-                  boxShadow: "0 4px 16px rgba(34, 197, 94, 0.3)",
+                  boxShadow: "0 4px 16px rgba(37, 99, 235, 0.3)",
                 }}
               />
 
@@ -213,9 +226,9 @@ export const Navigation: React.FC<NavigationProps> = ({
                   : "left-[calc(83.333%+0.5rem)] w-[calc(16.666%-0.5rem)]"
               }`}
               style={{
-                backgroundColor: "rgba(34, 197, 94, 0.9)",
+                backgroundColor: "rgba(37, 99, 235, 0.9)",
                 backdropFilter: "blur(10px)",
-                boxShadow: "0 4px 16px rgba(34, 197, 94, 0.3)",
+                boxShadow: "0 4px 16px rgba(37, 99, 235, 0.3)",
               }}
             />
 
