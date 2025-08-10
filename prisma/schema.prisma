@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,157 +7,99 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// User Management
-enum UserRole {
-  SUPER_ADMIN
-  ADMIN
-  SALESMAN
-}
-
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String
-  role      UserRole
-  loginId   String?  @unique
-  password  String?  // Hashed password
-  lastLogin DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  adminSites        Site[]           @relation("SiteAdmin")
-  salesmanSites     Site[]           @relation("SiteSalesman")
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String
+  role          UserRole
+  loginId       String?   @unique
+  password      String?
+  lastLogin     DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  adminSites    Site[]    @relation("SiteAdmin")
+  salesmanSites Site[]    @relation("SiteSalesman")
 
   @@map("users")
 }
 
-// Site Management
-enum SiteStatus {
-  ACTIVE
-  INACTIVE
-}
-
 model Site {
-  id        String     @id @default(cuid())
+  id        String        @id @default(cuid())
   name      String
   location  String
-  status    SiteStatus @default(ACTIVE)
-  isActive  Boolean    @default(true)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-
-  // Relations
+  status    SiteStatus    @default(ACTIVE)
+  isActive  Boolean       @default(true)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
   adminId   String?
-  admin     User?   @relation("SiteAdmin", fields: [adminId], references: [id])
-  salesmen  User[]  @relation("SiteSalesman")
   bookings  Booking[]
   revenue   SiteRevenue[]
+  admin     User?         @relation("SiteAdmin", fields: [adminId], references: [id])
+  salesmen  User[]        @relation("SiteSalesman")
 
   @@map("sites")
 }
 
-// Service Management
-enum ServiceType {
-  PACKAGE
-  ADDON
-}
-
 model Service {
-  id          String      @id @default(cuid())
+  id          String           @id @default(cuid())
   name        String
   type        ServiceType
   description String
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-
-  // Relations
-  pricing     ServicePricing[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
   bookings    BookingService[]
+  pricing     ServicePricing[]
   revenue     ServiceRevenue[]
 
   @@map("services")
 }
 
 model ServicePricing {
-  id        String @id @default(cuid())
-  serviceId String
+  id          String      @id @default(cuid())
+  serviceId   String
   vehicleType VehicleType
-  price     Decimal @db.Decimal(10, 2)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  price       Decimal     @db.Decimal(10, 2)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  service     Service     @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
   @@unique([serviceId, vehicleType])
   @@map("service_pricing")
 }
 
-// Vehicle Types
-enum VehicleType {
-  SEDAN
-  SUV
-  FOUR_BY_FOUR
-  PICKUP
-  MOTORCYCLE
-  OTHER
-}
-
-// Booking Management
-enum BookingStatus {
-  WAITING
-  IN_PROGRESS
-  COMPLETED
-  CANCELLED
-}
-
-enum PaymentMethod {
-  CASH
-  CARD
-}
-
 model Booking {
-  id            String        @id @default(cuid())
-  bookingId     String        @unique // Human readable ID like CW12345678
+  id            String           @id @default(cuid())
+  bookingId     String           @unique
   plateNumber   String
   vehicleType   VehicleType
   phoneNumber   String?
-  status        BookingStatus @default(WAITING)
+  status        BookingStatus    @default(WAITING)
   paymentMethod PaymentMethod?
-  
-  // Timestamps
-  arrivalTime   DateTime      @default(now())
+  arrivalTime   DateTime         @default(now())
   startTime     DateTime?
   completedTime DateTime?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-
-  // Relations
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
   siteId        String
-  site          Site          @relation(fields: [siteId], references: [id])
-  
   services      BookingService[]
+  site          Site             @relation(fields: [siteId], references: [id])
 
   @@map("bookings")
 }
 
 model BookingService {
-  id        String @id @default(cuid())
+  id        String   @id @default(cuid())
   bookingId String
   serviceId String
-  price     Decimal @db.Decimal(10, 2)
+  price     Decimal  @db.Decimal(10, 2)
   createdAt DateTime @default(now())
-
-  // Relations
-  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  service   Service @relation(fields: [serviceId], references: [id])
+  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  service   Service  @relation(fields: [serviceId], references: [id])
 
   @@unique([bookingId, serviceId])
   @@map("booking_services")
 }
 
-// Family & Friends - Free Service
 model FamilyFriend {
   id          String   @id @default(cuid())
   phoneNumber String   @unique
@@ -172,44 +111,38 @@ model FamilyFriend {
   @@map("family_friends")
 }
 
-// Revenue Tracking
 model SiteRevenue {
-  id        String   @id @default(cuid())
-  siteId    String
-  date      DateTime @db.Date
-  totalRevenue Decimal @db.Decimal(12, 2) @default(0)
-  cashRevenue Decimal @db.Decimal(12, 2) @default(0)
-  cardRevenue Decimal @db.Decimal(12, 2) @default(0)
-  totalCars Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  site      Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  id           String   @id @default(cuid())
+  siteId       String
+  date         DateTime @db.Date
+  totalRevenue Decimal  @default(0) @db.Decimal(12, 2)
+  cashRevenue  Decimal  @default(0) @db.Decimal(12, 2)
+  cardRevenue  Decimal  @default(0) @db.Decimal(12, 2)
+  totalCars    Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  site         Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
 
   @@unique([siteId, date])
   @@map("site_revenue")
 }
 
 model ServiceRevenue {
-  id        String   @id @default(cuid())
-  serviceId String
-  date      DateTime @db.Date
-  totalRevenue Decimal @db.Decimal(12, 2) @default(0)
-  cashRevenue Decimal @db.Decimal(12, 2) @default(0)
-  cardRevenue Decimal @db.Decimal(12, 2) @default(0)
-  usageCount Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  service   Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  id           String   @id @default(cuid())
+  serviceId    String
+  date         DateTime @db.Date
+  totalRevenue Decimal  @default(0) @db.Decimal(12, 2)
+  cashRevenue  Decimal  @default(0) @db.Decimal(12, 2)
+  cardRevenue  Decimal  @default(0) @db.Decimal(12, 2)
+  usageCount   Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  service      Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
   @@unique([serviceId, date])
   @@map("service_revenue")
 }
 
-// Unique Car Counter
 model UniqueCar {
   id          String   @id @default(cuid())
   plateNumber String   @unique
@@ -218,5 +151,43 @@ model UniqueCar {
   lastVisit   DateTime @default(now())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
   @@map("unique_cars")
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  SALESMAN
+}
+
+enum SiteStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum ServiceType {
+  PACKAGE
+  ADDON
+}
+
+enum VehicleType {
+  SEDAN
+  SUV
+  FOUR_BY_FOUR
+  PICKUP
+  MOTORCYCLE
+  OTHER
+}
+
+enum BookingStatus {
+  WAITING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
 }
