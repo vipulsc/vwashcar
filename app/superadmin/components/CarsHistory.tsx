@@ -370,7 +370,7 @@ export const CarsHistory: React.FC<CarsHistoryProps> = ({
                         {car.carNumber}
                       </h3>
                       <p className="text-sm" style={{ color: "#64748b" }}>
-                        {car.site} • {car.timestamp}
+                        {car.site} • {car.carType} • {car.timestamp}
                       </p>
                     </div>
                     <span

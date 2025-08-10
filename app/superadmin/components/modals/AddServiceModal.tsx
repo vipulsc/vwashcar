@@ -120,6 +120,8 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
             />
           </div>
 
+
+
           {/* Pricing Section */}
           <div>
             <label className="block text-sm font-semibold text-black mb-3">

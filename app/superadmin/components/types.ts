@@ -41,6 +41,7 @@ export interface CarStatus {
   id: number;
   site: string;
   carNumber: string;
+  carType: string;
   service: string;
   status: "in-progress" | "completed" | "waiting";
   amountPaid: number;

@@ -23,6 +23,11 @@ import { CredentialsModal } from "./components/modals/CredentialsModal";
 import { AddServiceModal } from "./components/modals/AddServiceModal";
 import { AddCoordinatorModal } from "./components/modals/AddCoordinatorModal";
 import { AddSalesmanModal } from "./components/modals/AddSalesmanModal";
+import { EditCarModal } from "./components/modals/EditCarModal";
+import { EditSiteModal } from "./components/modals/EditSiteModal";
+import { EditCoordinatorModal } from "./components/modals/EditCoordinatorModal";
+import { EditSalesmanModal } from "./components/modals/EditSalesmanModal";
+import { EditServiceModal } from "./components/modals/EditServiceModal";
 
 // Import types
 import {
@@ -114,7 +119,6 @@ const SuperAdminDashboard = () => {
   const [editServiceData, setEditServiceData] = useState({
     name: "",
     type: "package" as "package" | "addon",
-    description: "",
     pricing: {
       sedan: "",
       suv: "",
@@ -127,6 +131,7 @@ const SuperAdminDashboard = () => {
   const [editCarData, setEditCarData] = useState({
     service: "",
     addons: [] as string[],
+    carType: "sedan",
     status: "waiting" as "in-progress" | "completed" | "waiting",
   });
 
@@ -269,6 +274,7 @@ const SuperAdminDashboard = () => {
       id: 1,
       site: "Dubai Marina",
       carNumber: "DXB-A-1234",
+      carType: "sedan",
       service: "Premium Wash",
       status: "completed",
       amountPaid: 45,
@@ -284,6 +290,7 @@ const SuperAdminDashboard = () => {
       id: 2,
       site: "Business Bay",
       carNumber: "SHJ-B-5678",
+      carType: "suv",
       service: "Basic Wash",
       status: "in-progress",
       amountPaid: 25,
@@ -299,6 +306,7 @@ const SuperAdminDashboard = () => {
       id: 3,
       site: "Downtown",
       carNumber: "AUH-C-9012",
+      carType: "4x4",
       service: "Deluxe Wash",
       status: "waiting",
       amountPaid: 0,
@@ -314,6 +322,7 @@ const SuperAdminDashboard = () => {
       id: 4,
       site: "JLT Cluster",
       carNumber: "RAK-D-3456",
+      carType: "pickup",
       service: "Premium Wash",
       status: "completed",
       amountPaid: 45,
@@ -329,6 +338,7 @@ const SuperAdminDashboard = () => {
       id: 5,
       site: "Dubai Marina",
       carNumber: "DXB-E-5678",
+      carType: "motorcycle",
       service: "Full Detail",
       status: "in-progress",
       amountPaid: 60,
@@ -344,6 +354,7 @@ const SuperAdminDashboard = () => {
       id: 6,
       site: "Business Bay",
       carNumber: "SHJ-F-9012",
+      carType: "sedan",
       service: "Basic Wash",
       status: "waiting",
       amountPaid: 0,
@@ -781,6 +792,7 @@ const SuperAdminDashboard = () => {
     setEditCarData({
       service: car.service,
       addons: car.addons,
+      carType: car.carType,
       status: car.status,
     });
     setShowEditCarModal(true);
@@ -789,6 +801,27 @@ const SuperAdminDashboard = () => {
   const handleUpdateCar = (e: React.FormEvent) => {
     e.preventDefault();
     if (editingCar && editCarData.service) {
+      // Calculate new service price based on selected service and addons
+      let newServicePrice = 0;
+
+      // Get base service price (assuming sedan pricing for now)
+      const baseService = services.find(
+        (service) => service.name === editCarData.service
+      );
+      if (baseService) {
+        newServicePrice += baseService.pricing.sedan;
+      }
+
+      // Add addon prices
+      editCarData.addons.forEach((addonName) => {
+        const addonService = services.find(
+          (service) => service.name === addonName
+        );
+        if (addonService) {
+          newServicePrice += addonService.pricing.sedan;
+        }
+      });
+
       setCarsStatus((prev) =>
         prev.map((car) =>
           car.id === editingCar.id
@@ -796,7 +829,14 @@ const SuperAdminDashboard = () => {
                 ...car,
                 service: editCarData.service,
                 addons: editCarData.addons,
+                carType: editCarData.carType,
                 status: editCarData.status,
+                servicePrice: newServicePrice,
+                // Update amount paid only if status is completed
+                amountPaid:
+                  editCarData.status === "completed"
+                    ? newServicePrice
+                    : car.amountPaid,
               }
             : car
         )
@@ -806,6 +846,7 @@ const SuperAdminDashboard = () => {
       setEditCarData({
         service: "",
         addons: [],
+        carType: "sedan",
         status: "waiting",
       });
     }
@@ -846,7 +887,6 @@ const SuperAdminDashboard = () => {
     setEditServiceData({
       name: service.name,
       type: service.type,
-      description: service.description,
       pricing: {
         sedan: service.pricing.sedan.toString(),
         suv: service.pricing.suv.toString(),
@@ -934,7 +974,6 @@ const SuperAdminDashboard = () => {
     if (
       editingService &&
       editServiceData.name &&
-      editServiceData.description &&
       editServiceData.pricing.sedan &&
       editServiceData.pricing.suv &&
       editServiceData.pricing["4x4"] &&
@@ -948,7 +987,6 @@ const SuperAdminDashboard = () => {
                 ...service,
                 name: editServiceData.name,
                 type: editServiceData.type,
-                description: editServiceData.description,
                 pricing: {
                   sedan: parseFloat(editServiceData.pricing.sedan),
                   suv: parseFloat(editServiceData.pricing.suv),
@@ -965,7 +1003,6 @@ const SuperAdminDashboard = () => {
       setEditServiceData({
         name: "",
         type: "package" as "package" | "addon",
-        description: "",
         pricing: {
           sedan: "",
           suv: "",
@@ -1122,7 +1159,51 @@ const SuperAdminDashboard = () => {
         setNewSalesmanData={setNewSalesmanData}
         handleAddSalesman={handleAddSalesman}
       />
-      {/* Add other modals here as needed */}
+
+      {/* Edit Modals */}
+      <EditCarModal
+        showEditCarModal={showEditCarModal}
+        setShowEditCarModal={setShowEditCarModal}
+        editingCar={editingCar}
+        editCarData={editCarData}
+        setEditCarData={setEditCarData}
+        services={services}
+        handleUpdateCar={handleUpdateCar}
+      />
+      <EditSiteModal
+        showEditSiteModal={showEditSiteModal}
+        setShowEditSiteModal={setShowEditSiteModal}
+        editingSite={editingSite}
+        editSiteData={editSiteData}
+        setEditSiteData={setEditSiteData}
+        coordinators={coordinators}
+        salesmen={salesmen}
+        handleUpdateSite={handleUpdateSite}
+      />
+      <EditCoordinatorModal
+        showEditCoordinatorModal={showEditCoordinatorModal}
+        setShowEditCoordinatorModal={setShowEditCoordinatorModal}
+        editingCoordinator={editingCoordinator}
+        editCoordinatorData={editCoordinatorData}
+        setEditCoordinatorData={setEditCoordinatorData}
+        handleUpdateCoordinator={handleUpdateCoordinator}
+      />
+      <EditSalesmanModal
+        showEditSalesmanModal={showEditSalesmanModal}
+        setShowEditSalesmanModal={setShowEditSalesmanModal}
+        editingSalesman={editingSalesman}
+        editSalesmanData={editSalesmanData}
+        setEditSalesmanData={setEditSalesmanData}
+        handleUpdateSalesman={handleUpdateSalesman}
+      />
+      <EditServiceModal
+        showEditServiceModal={showEditServiceModal}
+        setShowEditServiceModal={setShowEditServiceModal}
+        editingService={editingService}
+        editServiceData={editServiceData}
+        setEditServiceData={setEditServiceData}
+        handleUpdateService={handleUpdateService}
+      />
     </div>
   );
 };
