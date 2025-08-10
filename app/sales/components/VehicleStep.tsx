@@ -11,7 +11,7 @@ import {
   HelpCircle,
   ChevronDown,
 } from "lucide-react";
-import SilentPlateScanner from "./SilentPlateScanner";
+import PlateScanner from "./PlateScanner";
 
 interface VehicleStepProps {
   formData: {
@@ -19,8 +19,14 @@ interface VehicleStepProps {
     carType: string;
     phone: string;
     countryCode: string;
+    selectedPackage: string;
+    addOns: string[];
+    paymentMethod: string;
+    plateImage: File | null;
   };
-  setFormData: (data: any) => void;
+  setFormData: React.Dispatch<
+    React.SetStateAction<VehicleStepProps["formData"]>
+  >;
 }
 
 const carTypes = [
@@ -54,30 +60,25 @@ export default function VehicleStep({
   const [selectedCountryCode, setSelectedCountryCode] = useState(
     formData.countryCode || "+971"
   );
-  const [isSilentScannerActive, setIsSilentScannerActive] = useState(false);
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handlePlateCapture = () => {
-    setIsSilentScannerActive(true);
+    setIsScannerOpen(true);
   };
 
   const handlePlateDetected = (plateNumber: string) => {
-    setFormData((prev: any) => ({
+    setFormData((prev) => ({
       ...prev,
       plateNumber: plateNumber.toUpperCase(),
     }));
-    setIsSilentScannerActive(false);
-  };
-
-  const handleScannerError = (error: string) => {
-    console.error("Scanner error:", error);
-    setIsSilentScannerActive(false);
+    setIsScannerOpen(false);
   };
 
   const handleImageCapture = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setFormData((prev: any) => ({ ...prev, plateImage: file }));
+      setFormData((prev) => ({ ...prev, plateImage: file }));
       // Process the uploaded image for plate recognition
       processUploadedImage(file);
     }
@@ -97,7 +98,7 @@ export default function VehicleStep({
       const data = await response.json();
 
       if (response.ok && data.plateText && data.plateText !== "Not Detected") {
-        setFormData((prev: any) => ({
+        setFormData((prev) => ({
           ...prev,
           plateNumber: data.plateText.toUpperCase(),
         }));
@@ -111,7 +112,7 @@ export default function VehicleStep({
 
   const handleCountrySelect = (countryCode: string) => {
     setSelectedCountryCode(countryCode);
-    setFormData((prev: any) => ({ ...prev, countryCode }));
+    setFormData((prev) => ({ ...prev, countryCode }));
     setIsCountryDropdownOpen(false);
   };
 
@@ -140,7 +141,7 @@ export default function VehicleStep({
               type="text"
               value={formData.plateNumber}
               onChange={(e) =>
-                setFormData((prev: any) => ({
+                setFormData((prev) => ({
                   ...prev,
                   plateNumber: e.target.value.toUpperCase(),
                 }))
@@ -150,16 +151,14 @@ export default function VehicleStep({
             />
             <button
               onClick={handlePlateCapture}
-              disabled={isCapturing || isSilentScannerActive}
+              disabled={isCapturing}
               className="px-4 py-3 bg-blue-50 text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors disabled:opacity-50 relative"
               title="Scan plate with camera"
             >
-              {isCapturing || isSilentScannerActive ? (
+              {isCapturing ? (
                 <div className="flex items-center space-x-2">
                   <div className="w-4 h-4 border-2 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
-                  <span className="text-sm">
-                    {isSilentScannerActive ? "Scanning..." : "Processing..."}
-                  </span>
+                  <span className="text-sm">Scanning...</span>
                 </div>
               ) : (
                 <Camera className="w-5 h-5" />
@@ -188,7 +187,7 @@ export default function VehicleStep({
                 <button
                   key={carType.id}
                   onClick={() =>
-                    setFormData((prev: any) => ({
+                    setFormData((prev) => ({
                       ...prev,
                       carType: carType.id,
                     }))
@@ -261,7 +260,7 @@ export default function VehicleStep({
                 type="tel"
                 value={formData.phone}
                 onChange={(e) =>
-                  setFormData((prev: any) => ({
+                  setFormData((prev) => ({
                     ...prev,
                     phone: e.target.value,
                   }))
@@ -282,11 +281,11 @@ export default function VehicleStep({
         </div>
       </div>
 
-      {/* Silent Plate Scanner */}
-      <SilentPlateScanner
-        isActive={isSilentScannerActive}
+      {/* Plate Scanner Modal */}
+      <PlateScanner
+        isOpen={isScannerOpen}
+        onClose={() => setIsScannerOpen(false)}
         onPlateDetected={handlePlateDetected}
-        onError={handleScannerError}
       />
     </div>
   );

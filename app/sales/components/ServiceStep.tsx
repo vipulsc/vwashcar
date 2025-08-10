@@ -4,10 +4,18 @@ import { Check } from "lucide-react";
 
 interface ServiceStepProps {
   formData: {
+    plateNumber: string;
+    carType: string;
+    phone: string;
+    countryCode: string;
     selectedPackage: string;
     addOns: string[];
+    paymentMethod: string;
+    plateImage: File | null;
   };
-  setFormData: (data: any) => void;
+  setFormData: React.Dispatch<
+    React.SetStateAction<ServiceStepProps["formData"]>
+  >;
 }
 
 const servicePackages = [
@@ -43,16 +51,19 @@ const addOnServices = [
   { id: "protection", name: "Paint Protection", price: 50 },
 ];
 
-export default function ServiceStep({ formData, setFormData }: ServiceStepProps) {
+export default function ServiceStep({
+  formData,
+  setFormData,
+}: ServiceStepProps) {
   const selectPackage = (packageId: string) => {
-    setFormData((prev: any) => ({
+    setFormData((prev) => ({
       ...prev,
       selectedPackage: packageId,
     }));
   };
 
   const toggleAddOn = (addOnId: string) => {
-    setFormData((prev: any) => ({
+    setFormData((prev) => ({
       ...prev,
       addOns: prev.addOns.includes(addOnId)
         ? prev.addOns.filter((id: string) => id !== addOnId)
@@ -117,9 +128,7 @@ export default function ServiceStep({ formData, setFormData }: ServiceStepProps)
                     <h4 className="font-bold text-gray-900 text-lg">
                       {pkg.name}
                     </h4>
-                    <p className="text-sm text-gray-600">
-                      {pkg.description}
-                    </p>
+                    <p className="text-sm text-gray-600">{pkg.description}</p>
                   </div>
                   <div className="text-right">
                     <p className="font-bold text-blue-600 text-xl">
@@ -190,9 +199,7 @@ export default function ServiceStep({ formData, setFormData }: ServiceStepProps)
             </div>
           )}
           <div className="border-t pt-2 flex justify-between items-center">
-            <span className="font-semibold text-gray-900">
-              Total Amount:
-            </span>
+            <span className="font-semibold text-gray-900">Total Amount:</span>
             <span className="text-xl font-bold text-blue-600">
               AED {getTotalPrice()}
             </span>

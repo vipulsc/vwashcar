@@ -4,13 +4,26 @@ import { Check, CreditCard, DollarSign } from "lucide-react";
 
 interface PaymentStepProps {
   formData: {
+    plateNumber: string;
+    carType: string;
+    phone: string;
+    countryCode: string;
+    selectedPackage: string;
+    addOns: string[];
     paymentMethod: string;
+    plateImage: File | null;
   };
-  setFormData: (data: any) => void;
+  setFormData: React.Dispatch<
+    React.SetStateAction<PaymentStepProps["formData"]>
+  >;
   totalPrice: number;
 }
 
-export default function PaymentStep({ formData, setFormData, totalPrice }: PaymentStepProps) {
+export default function PaymentStep({
+  formData,
+  setFormData,
+  totalPrice,
+}: PaymentStepProps) {
   return (
     <div className="space-y-6">
       <div className="text-center">
@@ -25,9 +38,7 @@ export default function PaymentStep({ formData, setFormData, totalPrice }: Payme
       {/* Current Total */}
       <div className="bg-gray-50 p-4 rounded-lg">
         <div className="flex justify-between items-center">
-          <span className="font-semibold text-gray-900">
-            Total Amount:
-          </span>
+          <span className="font-semibold text-gray-900">Total Amount:</span>
           <span className="text-xl font-bold text-blue-600">
             AED {totalPrice}
           </span>
@@ -36,12 +47,10 @@ export default function PaymentStep({ formData, setFormData, totalPrice }: Payme
 
       {/* Payment Methods */}
       <div className="space-y-4">
-        <h3 className="font-semibold text-gray-900">
-          Select Payment Method
-        </h3>
+        <h3 className="font-semibold text-gray-900">Select Payment Method</h3>
         <div
           onClick={() =>
-            setFormData((prev: any) => ({ ...prev, paymentMethod: "cash" }))
+            setFormData((prev) => ({ ...prev, paymentMethod: "cash" }))
           }
           className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
             formData.paymentMethod === "cash"
@@ -53,9 +62,7 @@ export default function PaymentStep({ formData, setFormData, totalPrice }: Payme
             <div className="flex items-center">
               <DollarSign className="w-6 h-6 text-green-600 mr-3" />
               <div>
-                <h4 className="font-semibold text-gray-900">
-                  Cash Payment
-                </h4>
+                <h4 className="font-semibold text-gray-900">Cash Payment</h4>
                 <p className="text-sm text-gray-600">
                   Pay when service is completed
                 </p>
@@ -69,7 +76,7 @@ export default function PaymentStep({ formData, setFormData, totalPrice }: Payme
 
         <div
           onClick={() =>
-            setFormData((prev: any) => ({ ...prev, paymentMethod: "card" }))
+            setFormData((prev) => ({ ...prev, paymentMethod: "card" }))
           }
           className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
             formData.paymentMethod === "card"
@@ -81,12 +88,8 @@ export default function PaymentStep({ formData, setFormData, totalPrice }: Payme
             <div className="flex items-center">
               <CreditCard className="w-6 h-6 text-blue-600 mr-3" />
               <div>
-                <h4 className="font-semibold text-gray-900">
-                  Card Payment
-                </h4>
-                <p className="text-sm text-gray-600">
-                  Secure online payment
-                </p>
+                <h4 className="font-semibold text-gray-900">Card Payment</h4>
+                <p className="text-sm text-gray-600">Secure online payment</p>
               </div>
             </div>
             {formData.paymentMethod === "card" && (

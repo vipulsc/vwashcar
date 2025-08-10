@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     const user = await prisma.user.findFirst({
       where: {
         email,
-        role: role as any,
+        role: role as "SUPER_ADMIN" | "ADMIN" | "SALESMAN",
       },
     });
 
