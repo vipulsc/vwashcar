@@ -20,6 +20,7 @@ import { ServicesManagement } from "./components/ServicesManagement";
 import { CarsHistory } from "./components/CarsHistory";
 import { AddSiteModal } from "./components/modals/AddSiteModal";
 import { CredentialsModal } from "./components/modals/CredentialsModal";
+import { AddServiceModal } from "./components/modals/AddServiceModal";
 
 // Import types
 import {
@@ -57,8 +58,8 @@ const SuperAdminDashboard = () => {
   const [editingCar, setEditingCar] = useState<CarStatus | null>(null);
 
   const [generatedCredentials, setGeneratedCredentials] = useState<{
-    loginId: string;
     password: string;
+    email: string;
   } | null>(null);
 
   // Form data states
@@ -82,7 +83,6 @@ const SuperAdminDashboard = () => {
   const [newServiceData, setNewServiceData] = useState({
     name: "",
     type: "package" as "package" | "addon",
-    description: "",
     pricing: {
       sedan: "",
       suv: "",
@@ -465,23 +465,45 @@ const SuperAdminDashboard = () => {
     month: new Date().getMonth() + 1,
     year: new Date().getFullYear(),
     status: "all",
+    site: "all",
   });
 
   // Helper functions
-  const generateCredentials = () => {
-    const loginId = `CW${Math.random()
-      .toString(36)
-      .substring(2, 8)
-      .toUpperCase()}`;
-    const password = Math.random().toString(36).substring(2, 10);
-    return { loginId, password };
+  const generateCredentials = (email: string) => {
+    // Generate a stronger password
+    const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const lowercase = "abcdefghijklmnopqrstuvwxyz";
+    const numbers = "0123456789";
+    const symbols = "!@#$%^&*";
+
+    let password = "";
+
+    // Ensure at least one character from each category
+    password += uppercase[Math.floor(Math.random() * uppercase.length)];
+    password += lowercase[Math.floor(Math.random() * lowercase.length)];
+    password += numbers[Math.floor(Math.random() * numbers.length)];
+    password += symbols[Math.floor(Math.random() * symbols.length)];
+
+    // Fill the rest with random characters
+    const allChars = uppercase + lowercase + numbers + symbols;
+    for (let i = 4; i < 12; i++) {
+      password += allChars[Math.floor(Math.random() * allChars.length)];
+    }
+
+    // Shuffle the password
+    password = password
+      .split("")
+      .sort(() => Math.random() - 0.5)
+      .join("");
+
+    return { password, email };
   };
 
   const handleGenerateCredentials = (
     person: Coordinator | Salesman,
     type: "coordinator" | "salesman"
   ) => {
-    const credentials = generateCredentials();
+    const credentials = generateCredentials(person.email);
     setGeneratedCredentials(credentials);
 
     if (type === "coordinator") {
@@ -490,7 +512,6 @@ const SuperAdminDashboard = () => {
           c.id === person.id
             ? {
                 ...c,
-                loginId: credentials.loginId,
                 password: credentials.password,
               }
             : c
@@ -502,7 +523,6 @@ const SuperAdminDashboard = () => {
           s.id === person.id
             ? {
                 ...s,
-                loginId: credentials.loginId,
                 password: credentials.password,
               }
             : s
@@ -637,7 +657,6 @@ const SuperAdminDashboard = () => {
     e.preventDefault();
     if (
       newServiceData.name &&
-      newServiceData.description &&
       newServiceData.pricing.sedan &&
       newServiceData.pricing.suv &&
       newServiceData.pricing["4x4"] &&
@@ -648,7 +667,7 @@ const SuperAdminDashboard = () => {
         id: Math.max(...services.map((s) => s.id)) + 1,
         name: newServiceData.name,
         type: newServiceData.type,
-        description: newServiceData.description,
+        description: "",
         pricing: {
           sedan: parseFloat(newServiceData.pricing.sedan),
           suv: parseFloat(newServiceData.pricing.suv),
@@ -666,7 +685,6 @@ const SuperAdminDashboard = () => {
       setNewServiceData({
         name: "",
         type: "package",
-        description: "",
         pricing: { sedan: "", suv: "", "4x4": "", pickup: "", motorcycle: "" },
       });
       setShowAddServiceModal(false);
@@ -1080,6 +1098,13 @@ const SuperAdminDashboard = () => {
         setShowCredentialsModal={setShowCredentialsModal}
         generatedCredentials={generatedCredentials}
         setGeneratedCredentials={setGeneratedCredentials}
+      />
+      <AddServiceModal
+        showAddServiceModal={showAddServiceModal}
+        setShowAddServiceModal={setShowAddServiceModal}
+        newServiceData={newServiceData}
+        setNewServiceData={setNewServiceData}
+        handleAddService={handleAddService}
       />
       {/* Add other modals here as needed */}
     </div>

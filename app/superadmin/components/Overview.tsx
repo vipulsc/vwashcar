@@ -241,73 +241,119 @@ export const Overview: React.FC<OverviewProps> = ({
       </div>
 
       {/* Site Performance Overview */}
-      <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">
-          Site Performance Overview
-        </h3>
+      <div className="bg-white p-8 rounded-lg border border-gray-200">
+        <div className="mb-8">
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            Site Performance Overview
+          </h3>
+          <p className="text-gray-600">
+            Performance metrics across all locations
+          </p>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {sites.map((site) => (
-            <div key={site.id} className="bg-gray-50 p-4 rounded-xl">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center">
-                  <div
-                    className={`w-3 h-3 rounded-full mr-3 ${
-                      site.isActive ? "bg-green-500" : "bg-red-500"
-                    }`}
-                  ></div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900">{site.name}</h4>
-                    <p className="text-sm text-gray-600">{site.location}</p>
+            <div
+              key={site.id}
+              className="bg-white p-6 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
+            >
+              {/* Site Header */}
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h4 className="text-lg font-medium text-gray-900">
+                    {site.name}
+                  </h4>
+                  <p className="text-sm text-gray-600">{site.location}</p>
+                </div>
+                <div
+                  className={`w-2 h-2 rounded-full ${
+                    site.isActive ? "bg-green-500" : "bg-gray-400"
+                  }`}
+                ></div>
+              </div>
+
+              {/* Revenue */}
+              <div className="mb-6">
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-sm text-gray-600">Total Revenue</span>
+                  <span className="text-lg font-semibold text-gray-900">
+                    AED {site.totalRevenue.toLocaleString()}
+                  </span>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center">
+                      <Banknote className="h-4 w-4 text-gray-500 mr-2" />
+                      <span className="text-sm text-gray-600">Cash</span>
+                    </div>
+                    <span className="text-sm font-medium text-gray-900">
+                      AED {site.totalCashRevenue.toLocaleString()}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center">
+                      <CreditCard className="h-4 w-4 text-gray-500 mr-2" />
+                      <span className="text-sm text-gray-600">Card</span>
+                    </div>
+                    <span className="text-sm font-medium text-gray-900">
+                      AED {site.totalCardRevenue.toLocaleString()}
+                    </span>
                   </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 gap-4">
-                <div>
-                  <p className="text-xs text-gray-500 uppercase tracking-wider font-medium mb-2">
-                    Revenue Breakdown
-                  </p>
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-semibold text-gray-900">
-                        Total:
-                      </span>
-                      <span className="text-lg font-bold text-gray-900">
-                        AED {site.totalRevenue.toLocaleString()}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center">
-                        <Banknote className="h-3 w-3 text-green-600 mr-1" />
-                        <span className="text-xs text-gray-600">Cash:</span>
-                      </div>
-                      <span className="text-sm font-semibold text-gray-700">
-                        AED {site.totalCashRevenue.toLocaleString()}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center">
-                        <CreditCard className="h-3 w-3 text-blue-600 mr-1" />
-                        <span className="text-xs text-gray-600">Card:</span>
-                      </div>
-                      <span className="text-sm font-semibold text-gray-700">
-                        AED {site.totalCardRevenue.toLocaleString()}
-                      </span>
-                    </div>
-                  </div>
+              {/* Operations */}
+              <div className="flex justify-between items-center">
+                <div className="flex items-center">
+                  <Car className="h-4 w-4 text-gray-500 mr-2" />
+                  <span className="text-sm text-gray-600">Total Cars</span>
                 </div>
-                <div>
-                  <p className="text-xs text-gray-500 uppercase tracking-wider font-medium mb-1">
-                    Total Cars
-                  </p>
-                  <p className="text-lg font-bold text-gray-900">
-                    {site.totalCars.toLocaleString()}
-                  </p>
-                </div>
+                <span className="text-lg font-semibold text-gray-900">
+                  {site.totalCars.toLocaleString()}
+                </span>
               </div>
             </div>
           ))}
         </div>
+
+        {/* Summary */}
+        {sites.length > 0 && (
+          <div className="mt-8 pt-6 border-t border-gray-200">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              <div>
+                <p className="text-2xl font-semibold text-gray-900">
+                  {sites.length}
+                </p>
+                <p className="text-sm text-gray-600">Total Sites</p>
+              </div>
+              <div>
+                <p className="text-2xl font-semibold text-gray-900">
+                  AED{" "}
+                  {sites
+                    .reduce((sum, site) => sum + site.totalRevenue, 0)
+                    .toLocaleString()}
+                </p>
+                <p className="text-sm text-gray-600">Combined Revenue</p>
+              </div>
+              <div>
+                <p className="text-2xl font-semibold text-gray-900">
+                  {sites
+                    .reduce((sum, site) => sum + site.totalCars, 0)
+                    .toLocaleString()}
+                </p>
+                <p className="text-sm text-gray-600">Total Cars</p>
+              </div>
+              <div>
+                <p className="text-2xl font-semibold text-gray-900">
+                  {sites.filter((site) => site.isActive).length}
+                </p>
+                <p className="text-sm text-gray-600">Active Sites</p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
