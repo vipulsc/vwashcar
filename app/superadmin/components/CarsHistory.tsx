@@ -58,6 +58,10 @@ export const CarsHistory: React.FC<CarsHistoryProps> = ({
   const [showTimeFilter, setShowTimeFilter] = useState(false);
   const [showSiteFilter, setShowSiteFilter] = useState(false);
 
+  // State for completion confirmation
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
+  const [carToComplete, setCarToComplete] = useState<number | null>(null);
+
   // Refs for dropdown containers
   const statusFilterRef = useRef<HTMLDivElement>(null);
   const timeFilterRef = useRef<HTMLDivElement>(null);
@@ -190,6 +194,25 @@ export const CarsHistory: React.FC<CarsHistoryProps> = ({
     } else {
       return <Car className="h-6 w-6" style={{ color: "#3b82f6" }} />;
     }
+  };
+
+  // Function to handle completion confirmation
+  const handleCompleteClick = (carId: number) => {
+    setCarToComplete(carId);
+    setShowCompletionModal(true);
+  };
+
+  const confirmCompletion = () => {
+    if (carToComplete) {
+      updateCarStatus(carToComplete, "completed");
+    }
+    setShowCompletionModal(false);
+    setCarToComplete(null);
+  };
+
+  const cancelCompletion = () => {
+    setShowCompletionModal(false);
+    setCarToComplete(null);
   };
 
   return (
@@ -426,7 +449,7 @@ export const CarsHistory: React.FC<CarsHistoryProps> = ({
                       In Progress
                     </button>
                     <button
-                      onClick={() => updateCarStatus(car.id, "completed")}
+                      onClick={() => handleCompleteClick(car.id)}
                       className="relative flex-1 px-3 py-1.5 sm:py-2 text-xs font-medium rounded-lg transition-all duration-300 z-10 whitespace-nowrap min-w-0"
                       style={{
                         color:
@@ -545,6 +568,44 @@ export const CarsHistory: React.FC<CarsHistoryProps> = ({
           <p style={{ color: "#64748b" }}>
             Try adjusting your search or filters
           </p>
+        </div>
+      )}
+
+      {/* Completion Confirmation Modal */}
+      {showCompletionModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md">
+            <div className="text-center">
+              <div className="mx-auto mb-4 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                <CheckCircle className="h-6 w-6 text-green-600" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 mb-2">
+                Mark as Completed?
+              </h3>
+              <p className="text-gray-600 mb-6">
+                A completion notification will be sent to the owner of car
+                number{" "}
+                {carToComplete
+                  ? carsStatus.find((c) => c.id === carToComplete)?.carNumber
+                  : ""}
+                .
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={cancelCompletion}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmCompletion}
+                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                >
+                  Yes, Complete
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
