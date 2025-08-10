@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { generateToken, setAuthCookie } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
   try {
@@ -62,6 +63,14 @@ export async function POST(request: NextRequest) {
       data: { lastLogin: new Date() },
     });
 
+    // Generate JWT token
+    const token = generateToken({
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+      name: user.name,
+    });
+
     // Return user data (without password)
     const userData = {
       id: user.id,
@@ -71,10 +80,13 @@ export async function POST(request: NextRequest) {
       lastLogin: user.lastLogin,
     };
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       message: "Login successful",
       user: userData,
     });
+
+    // Set JWT token in HTTP-only cookie
+    return setAuthCookie(response, token);
   } catch (error) {
     console.error("Login error:", error);
     return NextResponse.json(

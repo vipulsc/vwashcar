@@ -1,291 +1,258 @@
 # VWashCar - Professional Car Wash Management System
 
-A high-performance, production-ready car wash management system with real-time queue tracking, plate recognition, and comprehensive reporting.
+A comprehensive car wash management system with real-time queue tracking, plate recognition, and comprehensive reporting. Built with Next.js, TypeScript, Prisma, and PostgreSQL.
 
-## 🚀 Performance Optimizations
+## Features
 
-This application has been optimized for production performance with the following enhancements:
+- 🔐 **JWT Authentication** with role-based access control
+- 🏢 **Multi-site Management** for car wash locations
+- 👥 **User Management** with Super Admin, Admin, and Salesman roles
+- 🚗 **Booking System** with real-time status tracking
+- 💰 **Revenue Tracking** with detailed analytics
+- 📊 **Dashboard** with real-time statistics
+- 🎯 **Plate Recognition** integration
+- 📱 **Responsive Design** for all devices
 
-### Core Optimizations
-- **Next.js 15** with App Router and Turbopack for faster development
-- **React 19** with optimized rendering and memory management
-- **SWC Minification** for faster builds and smaller bundles
-- **Standalone Output** for optimized production deployments
-- **Image Optimization** with WebP/AVIF support and automatic resizing
+## Tech Stack
 
-### Database Optimizations
-- **Prisma Client** with connection pooling and query optimization
-- **Database connection management** with graceful shutdown
-- **Query caching** for frequently accessed data
-- **Optimized database schema** with proper indexing
+- **Frontend**: Next.js 15, React 19, TypeScript, Tailwind CSS
+- **Backend**: Next.js API Routes, Prisma ORM
+- **Database**: PostgreSQL
+- **Authentication**: JWT with HTTP-only cookies
+- **Deployment**: Vercel-ready
 
-### API Performance
-- **Request caching** with configurable TTL
-- **Request timeouts** and error handling
-- **Rate limiting** and request validation
-- **Compression** enabled for all responses
-- **CORS optimization** for cross-origin requests
+## Prerequisites
 
-### Frontend Optimizations
-- **React.memo** for component memoization
-- **useCallback** and **useMemo** for expensive operations
-- **Debounced and throttled** user interactions
-- **Optimized image capture** with quality settings
-- **Lazy loading** for non-critical components
+- Node.js 18+
+- PostgreSQL database
+- npm or yarn package manager
 
-### Caching Strategy
-- **In-memory caching** for API responses
-- **Static asset caching** with immutable headers
-- **Browser caching** optimization
-- **CDN-ready** configuration
+## Quick Start
 
-## 🛠️ Installation
+### 1. Clone the repository
 
-### Prerequisites
-- Node.js 18+ 
-- PostgreSQL 12+
-- npm or yarn
-
-### Quick Start
-
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd vwashcar
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Set up environment variables**
-   ```bash
-   cp env.example .env.local
-   # Edit .env.local with your configuration
-   ```
-
-4. **Set up the database**
-   ```bash
-   npm run db:generate
-   npm run db:push
-   npm run seed:users
-   ```
-
-5. **Start development server**
-   ```bash
-   npm run dev
-   ```
-
-## 🚀 Production Deployment
-
-### Automated Deployment
 ```bash
-# Run the production deployment script
-./scripts/deploy.sh
-
-# For Docker deployment
-./scripts/deploy.sh --docker
+git clone <repository-url>
+cd vwashcar
 ```
 
-### Manual Deployment Steps
+### 2. Install dependencies
 
-1. **Build for production**
-   ```bash
-   npm run build:prod
-   ```
+```bash
+npm install
+```
 
-2. **Start production server**
-   ```bash
-   npm run start:prod
-   ```
+### 3. Set up environment variables
 
-3. **Health check**
-   ```bash
-   ./health-check.sh
-   ```
+Copy the example environment file and configure it:
 
-### Environment Configuration
+```bash
+cp env.example .env.local
+```
 
-Create `.env.production` with the following variables:
+Update the following variables in `.env.local`:
 
 ```env
-# Database
-DATABASE_URL="postgresql://user:password@host:port/database"
+# Database Configuration
+DATABASE_URL="postgresql://username:password@localhost:5432/vwashcar"
 
-# API Keys
-PLATE_RECOGNIZER_API_KEY="your_api_key"
+# JWT Configuration
+JWT_SECRET="your-super-secret-jwt-key-change-in-production"
 
-# Application
-NODE_ENV="production"
-NEXT_PUBLIC_BASE_URL="https://your-domain.com"
+# Plate Recognition API (optional)
+PLATE_RECOGNIZER_API_KEY="your_plate_recognizer_api_key"
 
-# Performance
-NEXT_PUBLIC_ENABLE_PERFORMANCE_MONITORING="true"
-NEXT_TELEMETRY_DISABLED="1"
+# Application Configuration
+NODE_ENV="development"
+NEXT_PUBLIC_BASE_URL="http://localhost:3000"
 ```
 
-## 📊 Performance Monitoring
+### 4. Set up the database
 
-The application includes built-in performance monitoring:
-
-### Metrics Tracked
-- **Load times** for pages and components
-- **Render times** for React components
-- **Memory usage** and garbage collection
-- **API response times**
-- **Database query performance**
-
-### Monitoring Tools
 ```bash
-# View performance metrics
-npm run analyze
+# Generate Prisma client
+npm run db:generate
 
-# Check application health
-curl http://localhost:3000/api/health
+# Push schema to database
+npm run db:push
 
-# Monitor logs
-tail -f logs/combined.log
+# Seed the database with initial data
+npm run seed:db
 ```
 
-## 🔧 Available Scripts
+### 5. Start the development server
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## Default Login Credentials
+
+After running the seed script, you can log in with these credentials:
+
+### Super Admin
+
+- **Email**: admin@vwashcar.com
+- **Password**: admin123
+- **Access**: Full system access, can manage all sites, users, and services
+
+### Site Admins
+
+- **Downtown Manager**: downtown@vwashcar.com / admin123
+- **Mall Manager**: mall@vwashcar.com / admin123
+- **Access**: Manage their assigned sites and salesmen
+
+### Salesmen
+
+- **John Salesman**: sales1@vwashcar.com / sales123
+- **Jane Saleswoman**: sales2@vwashcar.com / sales123
+- **Access**: Create and manage bookings for their assigned sites
+
+## Project Structure
+
+```
+vwashcar/
+├── app/                    # Next.js app directory
+│   ├── admin/             # Admin dashboard
+│   ├── api/               # API routes
+│   │   ├── auth/          # Authentication endpoints
+│   │   ├── bookings/      # Booking management
+│   │   ├── services/      # Service management
+│   │   ├── sites/         # Site management
+│   │   ├── stats/         # Statistics and analytics
+│   │   └── users/         # User management
+│   ├── sales/             # Sales interface
+│   ├── superadmin/        # Super admin dashboard
+│   └── login/             # Login page
+├── lib/                   # Utility libraries
+│   ├── auth.ts           # JWT authentication utilities
+│   ├── prisma.ts         # Prisma client configuration
+│   └── hooks/            # React hooks
+├── prisma/               # Database schema and migrations
+├── scripts/              # Database seeding scripts
+└── public/               # Static assets
+```
+
+## API Endpoints
+
+### Authentication
+
+- `POST /api/auth/login` - User login
+- `POST /api/auth/logout` - User logout
+- `GET /api/auth/me` - Get current user info
+
+### Sites Management
+
+- `GET /api/sites` - Get all sites
+- `POST /api/sites` - Create new site
+- `GET /api/sites/[id]` - Get specific site
+- `PUT /api/sites/[id]` - Update site
+- `DELETE /api/sites/[id]` - Delete site
+
+### Services Management
+
+- `GET /api/services` - Get all services
+- `POST /api/services` - Create new service
+- `GET /api/services/[id]` - Get specific service
+- `PUT /api/services/[id]` - Update service
+- `DELETE /api/services/[id]` - Delete service
+
+### Bookings Management
+
+- `GET /api/bookings` - Get all bookings
+- `POST /api/bookings` - Create new booking
+- `GET /api/bookings/[id]` - Get specific booking
+- `PUT /api/bookings/[id]` - Update booking
+- `DELETE /api/bookings/[id]` - Delete booking
+
+### User Management
+
+- `GET /api/users` - Get all users
+- `POST /api/users` - Create new user
+- `GET /api/users/[id]` - Get specific user
+- `PUT /api/users/[id]` - Update user
+- `DELETE /api/users/[id]` - Delete user
+
+### Statistics
+
+- `GET /api/stats` - Get dashboard statistics
+
+## Database Schema
+
+The application uses a PostgreSQL database with the following main entities:
+
+- **Users**: Super admins, admins, and salesmen
+- **Sites**: Car wash locations
+- **Services**: Available car wash services with pricing
+- **Bookings**: Customer appointments and transactions
+- **Revenue**: Daily revenue tracking per site and service
+
+## Authentication & Authorization
+
+The application uses JWT tokens stored in HTTP-only cookies for security. Role-based access control is implemented:
+
+- **SUPER_ADMIN**: Full system access
+- **ADMIN**: Manage assigned sites and salesmen
+- **SALESMAN**: Create and manage bookings for assigned sites
+
+## Development
+
+### Available Scripts
 
 ```bash
 # Development
-npm run dev              # Start development server with Turbopack
-npm run build           # Build for production
-npm run start           # Start production server
-npm run lint            # Run ESLint
-npm run lint:fix        # Fix linting issues
-npm run type-check      # Run TypeScript type checking
+npm run dev              # Start development server
+npm run build            # Build for production
+npm run start            # Start production server
 
 # Database
-npm run db:generate     # Generate Prisma client
-npm run db:push         # Push schema to database
-npm run db:migrate      # Run database migrations
-npm run db:studio       # Open Prisma Studio
-npm run seed:users      # Seed initial users
+npm run db:generate      # Generate Prisma client
+npm run db:push          # Push schema to database
+npm run db:migrate       # Run database migrations
+npm run db:studio        # Open Prisma Studio
+npm run db:reset         # Reset database
 
-# Performance
-npm run analyze         # Analyze bundle size
-npm run build:prod      # Production build
-npm run start:prod      # Production start
+# Seeding
+npm run seed:db          # Seed database with initial data
+npm run seed:users       # Seed users only
 
-# Deployment
-./scripts/deploy.sh     # Automated deployment
-./health-check.sh       # Health check
+# Code Quality
+npm run lint             # Run ESLint
+npm run lint:fix         # Fix ESLint issues
+npm run type-check       # Run TypeScript type checking
 ```
 
-## 🏗️ Architecture
+### Environment Variables
 
-### Frontend
-- **Next.js 15** with App Router
-- **React 19** with concurrent features
-- **TypeScript** for type safety
-- **Tailwind CSS** for styling
-- **Lucide React** for icons
+See `env.example` for all available environment variables.
 
-### Backend
-- **Next.js API Routes** for serverless functions
-- **Prisma ORM** for database operations
-- **PostgreSQL** for data storage
-- **Plate Recognizer API** for license plate detection
+## Deployment
 
-### Performance Features
-- **Server-side rendering** for better SEO
-- **Static generation** for static pages
-- **Incremental static regeneration** for dynamic content
-- **Edge caching** for global performance
-- **Image optimization** with automatic formats
+### Vercel Deployment
 
-## 📈 Performance Benchmarks
+1. Connect your repository to Vercel
+2. Set up environment variables in Vercel dashboard
+3. Deploy automatically on push to main branch
 
-### Development
-- **Build time**: ~30 seconds
-- **Hot reload**: <1 second
-- **Bundle size**: Optimized with tree shaking
+### Manual Deployment
 
-### Production
-- **First load**: <2 seconds
-- **Subsequent loads**: <500ms (cached)
-- **API response time**: <100ms average
-- **Database queries**: <50ms average
+1. Build the application: `npm run build`
+2. Start the production server: `npm run start`
 
-## 🔒 Security Features
-
-- **Input validation** on all API endpoints
-- **Rate limiting** to prevent abuse
-- **CORS configuration** for cross-origin requests
-- **Environment variable** protection
-- **Database connection** security
-- **File upload** validation and size limits
-
-## 🐳 Docker Deployment
-
-```bash
-# Build Docker image
-docker build -t vwashcar .
-
-# Run container
-docker run -p 3000:3000 --env-file .env.production vwashcar
-
-# Docker Compose
-docker-compose up -d
-```
-
-## 📝 API Documentation
-
-### Health Check
-```bash
-GET /api/health
-```
-
-### Plate Recognition
-```bash
-POST /api/upload
-Content-Type: multipart/form-data
-```
-
-### Authentication
-```bash
-POST /api/auth/login
-POST /api/auth/register
-```
-
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Run tests and linting
+4. Add tests if applicable
 5. Submit a pull request
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License.
 
-## 🆘 Support
+## Support
 
-For support and questions:
-- Create an issue in the repository
-- Check the documentation
-- Review the performance monitoring logs
-
-## 🔄 Updates and Maintenance
-
-### Regular Maintenance Tasks
-- Monitor performance metrics
-- Update dependencies regularly
-- Review and optimize database queries
-- Check for security updates
-- Monitor error logs
-
-### Performance Optimization Checklist
-- [ ] Enable production mode
-- [ ] Configure caching headers
-- [ ] Optimize images and assets
-- [ ] Monitor bundle size
-- [ ] Set up performance monitoring
-- [ ] Configure CDN (if applicable)
-- [ ] Set up error tracking
-- [ ] Monitor database performance
+For support and questions, please contact the development team.

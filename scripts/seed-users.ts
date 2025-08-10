@@ -9,8 +9,21 @@ async function seedUsers() {
 
     // Hash passwords
     const saltRounds = 12;
+    const superAdminPassword = await bcrypt.hash("super123", saltRounds);
     const adminPassword = await bcrypt.hash("admin123", saltRounds);
     const salesmanPassword = await bcrypt.hash("sales123", saltRounds);
+
+    // Create Super Admin user
+    const superAdmin = await prisma.user.upsert({
+      where: { email: "super@vwashcar.com" },
+      update: {},
+      create: {
+        name: "Super Admin",
+        email: "super@vwashcar.com",
+        password: superAdminPassword,
+        role: "SUPER_ADMIN",
+      },
+    });
 
     // Create Admin user
     const admin = await prisma.user.upsert({
@@ -38,7 +51,10 @@ async function seedUsers() {
 
     console.log("✅ Users seeded successfully!");
     console.log("\n📋 Test Accounts:");
-    console.log("Admin:");
+    console.log("Super Admin:");
+    console.log("  Email: super@vwashcar.com");
+    console.log("  Password: super123");
+    console.log("\nAdmin:");
     console.log("  Email: admin@vwashcar.com");
     console.log("  Password: admin123");
     console.log("\nSalesman:");

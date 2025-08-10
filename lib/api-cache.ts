@@ -45,7 +45,7 @@ export function clearCache(key?: string): void {
 }
 
 // Cache middleware for API routes
-export function withCache<T>(
+export function withCache(
   handler: (req: NextRequest) => Promise<NextResponse>,
   options: CacheOptions = {}
 ) {
@@ -76,7 +76,7 @@ export function withCache<T>(
       try {
         const data = await response.clone().json();
         setCachedData(cacheKey, data, ttl);
-      } catch (error) {
+      } catch {
         // Ignore caching errors
       }
     }

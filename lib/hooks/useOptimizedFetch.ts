@@ -123,7 +123,8 @@ export function useOptimizedFetch<T>(
   // Clear cache when component unmounts
   useEffect(() => {
     return () => {
-      cacheRef.current.clear();
+      const currentCache = cacheRef.current;
+      currentCache.clear();
     };
   }, []);
 
