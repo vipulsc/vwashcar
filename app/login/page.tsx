@@ -79,26 +79,40 @@ export default function LoginPage() {
         >
           {/* Role Switcher */}
           <div
-            className="flex rounded-xl sm:rounded-2xl p-1 mb-4 sm:mb-6"
-            style={{ backgroundColor: "var(--auth-container-bg)" }}
+            className="flex rounded-2xl sm:rounded-3xl p-1 mb-6 sm:mb-8 relative overflow-hidden backdrop-blur-md"
+            style={{
+              backgroundColor: "rgba(255, 255, 255, 0.1)",
+              border: "1px solid rgba(255, 255, 255, 0.2)",
+              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
+            }}
           >
+            {/* Animated Background Slider */}
+            <div
+              className={`absolute top-1 bottom-1 rounded-xl sm:rounded-2xl transition-all duration-500 ease-out ${
+                role === "SUPER_ADMIN"
+                  ? "left-1 w-[calc(33.333%-0.25rem)]"
+                  : role === "ADMIN"
+                  ? "left-[calc(33.333%+0.25rem)] w-[calc(33.333%-0.25rem)]"
+                  : "left-[calc(66.666%+0.25rem)] w-[calc(33.333%-0.25rem)]"
+              }`}
+              style={{
+                backgroundColor: "rgba(37, 99, 235, 0.9)",
+                backdropFilter: "blur(10px)",
+                boxShadow: "0 4px 16px rgba(37, 99, 235, 0.3)",
+              }}
+            />
+
             {(["SUPER_ADMIN", "ADMIN", "SALESMAN"] as UserRole[]).map((r) => (
               <div
                 key={r}
-                className={`flex-1 text-center py-2.5 sm:py-3 px-2 sm:px-3 rounded-lg sm:rounded-xl font-medium sm:font-semibold text-xs sm:text-sm cursor-pointer transition-all duration-300 flex items-center justify-center min-h-[44px] sm:min-h-[48px] ${
-                  role === r ? "shadow-lg" : ""
+                className={`flex-1 text-center py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl sm:rounded-2xl font-medium sm:font-semibold text-xs sm:text-sm cursor-pointer transition-all duration-300 flex items-center justify-center min-h-[36px] sm:min-h-[44px] relative z-10 ${
+                  role === r
+                    ? "text-white"
+                    : "text-gray-600 hover:text-gray-800"
                 }`}
-                style={{
-                  backgroundColor:
-                    role === r ? "var(--auth-purple)" : "transparent",
-                  color:
-                    role === r
-                      ? "var(--auth-text-primary)"
-                      : "var(--auth-text-primary)",
-                }}
                 onClick={() => handleRoleToggle(r)}
               >
-                <span className="leading-none">
+                <span className="leading-none font-medium">
                   {r === "SUPER_ADMIN"
                     ? "Super Admin"
                     : r.charAt(0).toUpperCase() + r.slice(1).toLowerCase()}

@@ -102,40 +102,46 @@ export default function AuthPage() {
         >
           {/* Mode Toggle */}
           <div
-            className="flex rounded-xl sm:rounded-2xl p-1 mb-4 sm:mb-6"
-            style={{ backgroundColor: "var(--auth-container-bg)" }}
+            className="flex rounded-2xl sm:rounded-3xl p-1 mb-6 sm:mb-8 relative overflow-hidden backdrop-blur-md"
+            style={{
+              backgroundColor: "rgba(255, 255, 255, 0.1)",
+              border: "1px solid rgba(255, 255, 255, 0.2)",
+              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
+            }}
           >
-            <button
-              onClick={() => setMode("register")}
-              className={`flex-1 py-2.5 sm:py-3 px-2 sm:px-3 rounded-lg sm:rounded-xl font-medium sm:font-semibold text-xs sm:text-sm transition-all duration-300 flex items-center justify-center min-h-[44px] sm:min-h-[48px] ${
-                mode === "register" ? "shadow-lg" : ""
+            {/* Animated Background Slider */}
+            <div
+              className={`absolute top-1 bottom-1 rounded-xl sm:rounded-2xl transition-all duration-500 ease-out ${
+                mode === "register"
+                  ? "left-1 w-[calc(50%-0.25rem)]"
+                  : "left-[calc(50%+0.25rem)] w-[calc(50%-0.25rem)]"
               }`}
               style={{
-                backgroundColor:
-                  mode === "register" ? "var(--auth-purple)" : "transparent",
-                color:
-                  mode === "register"
-                    ? "var(--auth-text-primary)"
-                    : "var(--auth-text-primary)",
+                backgroundColor: "rgba(37, 99, 235, 0.9)",
+                backdropFilter: "blur(10px)",
+                boxShadow: "0 4px 16px rgba(37, 99, 235, 0.3)",
               }}
+            />
+
+            <button
+              onClick={() => setMode("register")}
+              className={`flex-1 py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl sm:rounded-2xl font-medium sm:font-semibold text-xs sm:text-sm transition-all duration-300 flex items-center justify-center min-h-[36px] sm:min-h-[44px] relative z-10 ${
+                mode === "register"
+                  ? "text-white"
+                  : "text-gray-600 hover:text-gray-800"
+              }`}
             >
-              <span className="leading-none">Register</span>
+              <span className="leading-none font-medium">Register</span>
             </button>
             <button
               onClick={() => setMode("forgot")}
-              className={`flex-1 py-2.5 sm:py-3 px-2 sm:px-3 rounded-lg sm:rounded-xl font-medium sm:font-semibold text-xs sm:text-sm transition-all duration-300 flex items-center justify-center min-h-[44px] sm:min-h-[48px] ${
-                mode === "forgot" ? "shadow-lg" : ""
+              className={`flex-1 py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl sm:rounded-2xl font-medium sm:font-semibold text-xs sm:text-sm transition-all duration-300 flex items-center justify-center min-h-[36px] sm:min-h-[44px] relative z-10 ${
+                mode === "forgot"
+                  ? "text-white"
+                  : "text-gray-600 hover:text-gray-800"
               }`}
-              style={{
-                backgroundColor:
-                  mode === "forgot" ? "var(--auth-purple)" : "transparent",
-                color:
-                  mode === "forgot"
-                    ? "var(--auth-text-primary)"
-                    : "var(--auth-text-primary)",
-              }}
             >
-              <span className="leading-none">Forgot Password</span>
+              <span className="leading-none font-medium">Forgot Password</span>
             </button>
           </div>
 
