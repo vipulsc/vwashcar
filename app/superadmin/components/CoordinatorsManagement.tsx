@@ -250,7 +250,7 @@ export const CoordinatorsManagement: React.FC<CoordinatorsManagementProps> = ({
               <p className="text-sm mb-3" style={{ color: "#64748b" }}>
                 Are you sure you want to permanently delete the coordinator{" "}
                 <span className="font-semibold" style={{ color: "#1e293b" }}>
-                  "{selectedCoordinator.name}"
+                  &quot;{selectedCoordinator.name}&quot;
                 </span>
                 ?
               </p>

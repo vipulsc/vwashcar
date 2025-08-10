@@ -283,7 +283,7 @@ export const ServicesManagement: React.FC<ServicesManagementProps> = ({
               <p className="text-sm mb-3" style={{ color: "#64748b" }}>
                 Are you sure you want to permanently delete the service{" "}
                 <span className="font-semibold" style={{ color: "#1e293b" }}>
-                  "{serviceToDelete.name}"
+                  &ldquo;{serviceToDelete.name}&rdquo;
                 </span>
                 ?
               </p>

@@ -312,7 +312,7 @@ export const SitesManagement: React.FC<SitesManagementProps> = ({
               Are you sure you want to{" "}
               {selectedSite.isActive ? "deactivate" : "activate"} the site{" "}
               <span className="font-semibold" style={{ color: "#1e293b" }}>
-                "{selectedSite.name}"
+                &ldquo;{selectedSite.name}&rdquo;
               </span>
               ?
             </p>
@@ -379,7 +379,7 @@ export const SitesManagement: React.FC<SitesManagementProps> = ({
               <p className="text-sm mb-3" style={{ color: "#64748b" }}>
                 Are you sure you want to permanently delete the site{" "}
                 <span className="font-semibold" style={{ color: "#1e293b" }}>
-                  "{siteToDelete.name}"
+                  &ldquo;{siteToDelete.name}&rdquo;
                 </span>
                 ?
               </p>
@@ -442,7 +442,7 @@ export const SitesManagement: React.FC<SitesManagementProps> = ({
                 Are you sure?
               </h3>
               <p className="text-sm mb-6" style={{ color: "#64748b" }}>
-                Delete site "{siteToDelete.name}"?
+                Delete site &ldquo;{siteToDelete.name}&rdquo;?
               </p>
               <div className="flex space-x-3">
                 <button

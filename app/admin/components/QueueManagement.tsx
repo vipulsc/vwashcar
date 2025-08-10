@@ -40,7 +40,6 @@ export const QueueManagement: React.FC<QueueManagementProps> = ({
   // State for completion confirmation
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [carToComplete, setCarToComplete] = useState<string | null>(null);
-  const [completionMessage, setCompletionMessage] = useState("");
   // Filter queue to show only today's data
   const todayQueue = queue.filter((car) => {
     // Since arrivalTime is just a time string (e.g., "09:30 AM"),
@@ -57,9 +56,6 @@ export const QueueManagement: React.FC<QueueManagementProps> = ({
     // If current status is "in-progress" and we're trying to complete, show confirmation
     if (car.status === "in-progress") {
       setCarToComplete(carId);
-      setCompletionMessage(
-        `Your car wash for ${car.plateNumber} has been completed! Your vehicle is ready for pickup. Thank you for choosing our service.`
-      );
       setShowCompletionModal(true);
       return;
     }
@@ -96,37 +92,11 @@ export const QueueManagement: React.FC<QueueManagementProps> = ({
     }
     setShowCompletionModal(false);
     setCarToComplete(null);
-    setCompletionMessage("");
   };
 
   const cancelCompletion = () => {
     setShowCompletionModal(false);
     setCarToComplete(null);
-    setCompletionMessage("");
-  };
-
-  const updateServicePackage = (id: string, servicePackage: string) => {
-    setQueue((prev: CarInQueue[]) =>
-      prev.map((item: CarInQueue) =>
-        item.id === id ? { ...item, servicePackage } : item
-      )
-    );
-    setEditingQueue(null);
-  };
-
-  const toggleAddOn = (carId: string, addOnId: string) => {
-    setQueue((prev: CarInQueue[]) =>
-      prev.map((car: CarInQueue) => {
-        if (car.id === carId) {
-          const currentAddOns = car.addOns || [];
-          const newAddOns = currentAddOns.includes(addOnId)
-            ? currentAddOns.filter((id: string) => id !== addOnId)
-            : [...currentAddOns, addOnId];
-          return { ...car, addOns: newAddOns };
-        }
-        return car;
-      })
-    );
   };
 
   // Function to calculate total price based on selected service and addons
@@ -217,19 +187,6 @@ export const QueueManagement: React.FC<QueueManagementProps> = ({
         return "bg-slate-100 text-slate-800 border-slate-200";
       default:
         return "bg-gray-50 text-gray-700 border-gray-200";
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "completed":
-        return <CheckCircle className="w-4 h-4" />;
-      case "in-progress":
-        return <Activity className="w-4 h-4" />;
-      case "waiting":
-        return <Clock className="w-4 h-4" />;
-      default:
-        return <Car className="w-4 h-4" />;
     }
   };
 
@@ -332,7 +289,7 @@ export const QueueManagement: React.FC<QueueManagementProps> = ({
               Queue Management
             </h2>
             <p className="text-sm text-gray-600 mt-1">
-              Track and manage today's car wash progress in real-time
+              Track and manage today&apos;s car wash progress in real-time
             </p>
           </div>
 
@@ -425,7 +382,7 @@ export const QueueManagement: React.FC<QueueManagementProps> = ({
 
       {/* Queue List - Superadmin Style */}
       <div className="space-y-4">
-        {filteredQueue.map((car, index) => (
+        {filteredQueue.map((car) => (
           <div
             key={car.id}
             className="p-4 sm:p-6 rounded-lg border transition-all duration-200 shadow-sm"

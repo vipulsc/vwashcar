@@ -24,7 +24,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   };
 
   // Filter queue to show only today's data
-  const todayQueue = queue.filter((car) => {
+  const todayQueue = queue.filter(() => {
     // Since arrivalTime is just a time string (e.g., "09:30 AM"),
     // we'll show all cars for now. In a real app, you'd have full dates.
     // For demo purposes, we'll show all cars in the queue
@@ -46,11 +46,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
   return (
     <div className="space-y-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div></div>
-      </div>
-
       {/* Main Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
@@ -127,7 +122,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
         <div className="px-6 py-4 border-b border-gray-200">
           <h3 className="text-lg font-semibold text-gray-900">
-            Today's Activity
+            Today&apos;s Activity
           </h3>
           <p className="text-sm text-gray-600 mt-1">
             Recent car wash activities and status updates
@@ -135,14 +130,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </div>
         <div className="p-6">
           <div className="space-y-4">
-            {todayQueue.slice(0, 5).map((car, index) => (
+            {todayQueue.slice(0, 5).map((car) => (
               <div
                 key={car.id}
-                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-smooth hover-lift"
-                style={{
-                  animationDelay: `${index * 0.1}s`,
-                  animation: "fadeIn 0.3s ease-out forwards",
-                }}
+                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100"
               >
                 <div className="flex items-center space-x-4">
                   <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">

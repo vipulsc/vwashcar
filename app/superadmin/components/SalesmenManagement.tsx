@@ -249,7 +249,7 @@ export const SalesmenManagement: React.FC<SalesmenManagementProps> = ({
               <p className="text-sm mb-3" style={{ color: "#64748b" }}>
                 Are you sure you want to permanently delete the salesman{" "}
                 <span className="font-semibold" style={{ color: "#1e293b" }}>
-                  "{selectedSalesman.name}"
+                  &quot;{selectedSalesman.name}&quot;
                 </span>
                 ?
               </p>

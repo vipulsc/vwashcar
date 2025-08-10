@@ -14,13 +14,9 @@ export const StatCard: React.FC<StatCardProps> = ({
   color = "green",
   iconColor,
 }) => (
-  <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover-lift transition-smooth cursor-pointer">
+  <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm cursor-pointer">
     <div className="flex items-center mb-4">
-      <Icon
-        className={`h-6 w-6 ${
-          iconColor || `text-${color}-600`
-        } mr-3 transition-smooth`}
-      />
+      <Icon className={`h-6 w-6 ${iconColor || `text-${color}-600`} mr-3`} />
       <p className="text-sm font-semibold text-gray-600 uppercase tracking-wider">
         {title}
       </p>
@@ -39,13 +35,9 @@ export const RevenueStatCard: React.FC<RevenueStatCardProps> = ({
   subtitle,
   iconColor,
 }) => (
-  <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover-lift transition-smooth cursor-pointer">
+  <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm cursor-pointer">
     <div className="flex items-center mb-4">
-      <Icon
-        className={`h-6 w-6 ${
-          iconColor || "text-green-600"
-        } mr-3 transition-smooth`}
-      />
+      <Icon className={`h-6 w-6 ${iconColor || "text-green-600"} mr-3`} />
       <p className="text-sm font-semibold text-gray-600 uppercase tracking-wider">
         {title}
       </p>
@@ -54,14 +46,14 @@ export const RevenueStatCard: React.FC<RevenueStatCardProps> = ({
     <div className="space-y-2">
       <div className="flex items-center justify-between">
         <div className="flex items-center">
-          <Banknote className="h-4 w-4 text-green-600 mr-2 transition-smooth" />
+          <Banknote className="h-4 w-4 text-green-600 mr-2" />
           <span className="text-sm text-gray-600">Cash:</span>
         </div>
         <span className="text-sm font-semibold text-gray-900">{cashValue}</span>
       </div>
       <div className="flex items-center justify-between">
         <div className="flex items-center">
-          <CreditCard className="h-4 w-4 text-green-600 mr-2 transition-smooth" />
+          <CreditCard className="h-4 w-4 text-green-600 mr-2" />
           <span className="text-sm text-gray-600">Card:</span>
         </div>
         <span className="text-sm font-semibold text-gray-900">{cardValue}</span>
@@ -78,7 +70,7 @@ export const SmallStatCard: React.FC<SmallStatCardProps> = ({
   color = "green",
   iconColor,
 }) => (
-  <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm hover-lift transition-smooth cursor-pointer">
+  <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm cursor-pointer">
     <div className="flex items-center justify-between">
       <div>
         <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">
@@ -86,11 +78,7 @@ export const SmallStatCard: React.FC<SmallStatCardProps> = ({
         </p>
         <p className="text-lg font-bold text-gray-900">{value}</p>
       </div>
-      <Icon
-        className={`h-5 w-5 ${
-          iconColor || `text-${color}-600`
-        } transition-smooth`}
-      />
+      <Icon className={`h-5 w-5 ${iconColor || `text-${color}-600`}`} />
     </div>
   </div>
 );
