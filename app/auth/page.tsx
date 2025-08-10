@@ -53,6 +53,9 @@ export default function AuthPage() {
     return Object.keys(newErrors).length === 0;
   };
 
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState("");
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -60,13 +63,47 @@ export default function AuthPage() {
       return;
     }
 
-    if (mode === "register") {
-      console.log("Registration attempt:", {
-        ...formData,
-        role: "SUPER_ADMIN",
-      });
-    } else {
-      console.log("Password reset requested for:", formData.email);
+    setLoading(true);
+    setSuccess("");
+    setErrors({});
+
+    try {
+      if (mode === "register") {
+        const response = await fetch("/api/auth/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            email: formData.email,
+            password: formData.password,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          if (data.error) {
+            setErrors({ general: data.error });
+          } else {
+            setErrors({ general: "Registration failed. Please try again." });
+          }
+          return;
+        }
+
+        setSuccess(
+          "Super admin account created successfully! You can now login."
+        );
+        setFormData({ name: "", email: "", password: "" });
+      } else {
+        // For now, just show a message for password reset
+        setSuccess("Password reset functionality will be implemented soon.");
+      }
+    } catch (error) {
+      setErrors({ general: "Network error. Please try again." });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -79,17 +116,14 @@ export default function AuthPage() {
         {/* Header */}
         <div className="text-center mb-4 sm:mb-6">
           <h1
-            className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-1 sm:mb-2"
-            style={{ color: "var(--auth-text-primary)" }}
+            className="text-lg sm:text-xl lg:text-2xl font-medium mb-1 sm:mb-2"
+            style={{
+              color: "var(--auth-text-secondary)",
+              opacity: 0.7,
+            }}
           >
-            VWashCar
+            Superadmin Registration
           </h1>
-          <p
-            className="text-xs sm:text-sm"
-            style={{ color: "var(--auth-text-secondary)" }}
-          >
-            Account Management
-          </p>
         </div>
 
         {/* Auth Container */}
@@ -131,7 +165,7 @@ export default function AuthPage() {
                   : "text-gray-600 hover:text-gray-800"
               }`}
             >
-              <span className="leading-none font-medium">Register</span>
+              <span className="leading-none font-medium">Super Admin</span>
             </button>
             <button
               onClick={() => setMode("forgot")}
@@ -144,6 +178,34 @@ export default function AuthPage() {
               <span className="leading-none font-medium">Forgot Password</span>
             </button>
           </div>
+
+          {/* Success Message */}
+          {success && (
+            <div
+              className="mb-3 sm:mb-4 p-3 sm:p-4 rounded-lg sm:rounded-xl text-xs sm:text-sm"
+              style={{
+                backgroundColor: "rgba(34, 197, 94, 0.2)",
+                border: "1px solid #22c55e",
+                color: "#22c55e",
+              }}
+            >
+              {success}
+            </div>
+          )}
+
+          {/* Error Message */}
+          {errors.general && (
+            <div
+              className="mb-3 sm:mb-4 p-3 sm:p-4 rounded-lg sm:rounded-xl text-xs sm:text-sm"
+              style={{
+                backgroundColor: "rgba(239, 68, 68, 0.2)",
+                border: "1px solid var(--auth-red)",
+                color: "var(--auth-red)",
+              }}
+            >
+              {errors.general}
+            </div>
+          )}
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
@@ -275,20 +337,29 @@ export default function AuthPage() {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full py-2.5 sm:py-3 px-4 rounded-lg sm:rounded-xl font-semibold sm:font-bold text-base sm:text-lg transition-all duration-300 mt-4 sm:mt-6"
+              disabled={loading}
+              className="w-full py-2.5 sm:py-3 px-4 rounded-lg sm:rounded-xl font-semibold sm:font-bold text-base sm:text-lg transition-all duration-300 mt-4 sm:mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 backgroundColor: "var(--auth-purple)",
                 color: "var(--auth-text-primary)",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor =
-                  "var(--auth-purple-hover)";
+                if (!loading) {
+                  e.currentTarget.style.backgroundColor =
+                    "var(--auth-purple-hover)";
+                }
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.backgroundColor = "var(--auth-purple)";
               }}
             >
-              {mode === "register" ? "Create Account" : "Send Reset Link"}
+              {loading
+                ? mode === "register"
+                  ? "Creating Account..."
+                  : "Sending..."
+                : mode === "register"
+                ? "Create Account"
+                : "Send Reset Link"}
             </button>
           </form>
 
