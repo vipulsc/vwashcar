@@ -11,6 +11,59 @@
   --border: #e2e8f0;
   --input-bg: #f8fafc;
   --card-bg: #ffffff;
+
+  /* Auth System Colors - Ocean Fresh Complete Color System */
+
+  /* Core Colors */
+  --auth-bg: #f8fafb;
+  --auth-container-bg: rgba(255, 255, 255, 0.95);
+  --auth-border: rgba(37, 99, 235, 0.2);
+  --auth-text-primary: #1e293b;
+  --auth-text-secondary: #475569;
+  --auth-text-muted: #64748b;
+  --auth-purple: #2563eb;
+  --auth-purple-hover: #1d4ed8;
+  --auth-purple-active: #1e40af;
+  --auth-red: #dc2626;
+  --auth-green: #059669;
+  --auth-warning: #d97706;
+  --auth-info: #06b6d4;
+
+  /* Input Elements */
+  --auth-input-bg: #ffffff;
+  --auth-input-border: rgba(209, 213, 219, 0.8);
+  --auth-input-focus-border: #2563eb;
+  --auth-input-focus-bg: #eff6ff;
+  --auth-input-placeholder: #9ca3af;
+  --auth-input-disabled-bg: #f9fafb;
+  --auth-input-disabled-text: #6b7280;
+
+  /* Button States */
+  --auth-button-primary: #2563eb;
+  --auth-button-primary-hover: #1d4ed8;
+  --auth-button-primary-active: #1e40af;
+  --auth-button-primary-disabled: #9ca3af;
+  --auth-button-secondary: #ffffff;
+  --auth-button-secondary-hover: #eff6ff;
+  --auth-button-secondary-active: #dbeafe;
+
+  /* Status Colors */
+  --auth-success: #10b981;
+  --auth-warning: #f59e0b;
+  --auth-error: #ef4444;
+  --auth-info: #06b6d4;
+  --auth-neutral: #6b7280;
+
+  /* Link Colors */
+  --auth-link: #2563eb;
+  --auth-link-hover: #1d4ed8;
+
+  /* Effects */
+  --auth-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --auth-glow: 0 0 20px rgba(37, 99, 235, 0.15);
+  --auth-card-shadow: rgba(0, 0, 0, 0.1);
+  --auth-card-hover: rgba(37, 99, 235, 0.05);
 }
 
 @theme inline {

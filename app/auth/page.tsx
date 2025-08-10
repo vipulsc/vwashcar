@@ -71,49 +71,84 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div
+      className="min-h-screen flex items-center justify-center p-3 sm:p-4 lg:p-8"
+      style={{ backgroundColor: "var(--auth-bg)" }}
+    >
+      <div className="w-full max-w-sm sm:max-w-md lg:max-w-md">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">VWashCar</h1>
-          <p className="text-slate-300">Account Management</p>
+        <div className="text-center mb-4 sm:mb-6">
+          <h1
+            className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-1 sm:mb-2"
+            style={{ color: "var(--auth-text-primary)" }}
+          >
+            VWashCar
+          </h1>
+          <p
+            className="text-xs sm:text-sm"
+            style={{ color: "var(--auth-text-secondary)" }}
+          >
+            Account Management
+          </p>
         </div>
 
         {/* Auth Container */}
-        <div className="bg-white/10 backdrop-blur-lg rounded-3xl shadow-2xl border border-white/20 p-8">
+        <div
+          className="backdrop-blur-lg rounded-2xl sm:rounded-3xl shadow-2xl border p-4 sm:p-6 lg:p-8"
+          style={{
+            backgroundColor: "var(--auth-container-bg)",
+            borderColor: "var(--auth-border)",
+          }}
+        >
           {/* Mode Toggle */}
-          <div className="flex bg-white/10 rounded-2xl p-1 mb-8">
+          <div
+            className="flex rounded-xl sm:rounded-2xl p-1 mb-4 sm:mb-6"
+            style={{ backgroundColor: "var(--auth-container-bg)" }}
+          >
             <button
               onClick={() => setMode("register")}
-              className={`flex-1 py-3 px-4 rounded-xl font-semibold text-sm transition-all duration-300 ${
-                mode === "register"
-                  ? "bg-white text-slate-900 shadow-lg"
-                  : "text-white hover:text-slate-200"
+              className={`flex-1 py-2.5 sm:py-3 px-2 sm:px-3 rounded-lg sm:rounded-xl font-medium sm:font-semibold text-xs sm:text-sm transition-all duration-300 flex items-center justify-center min-h-[44px] sm:min-h-[48px] ${
+                mode === "register" ? "shadow-lg" : ""
               }`}
+              style={{
+                backgroundColor:
+                  mode === "register" ? "var(--auth-purple)" : "transparent",
+                color:
+                  mode === "register"
+                    ? "var(--auth-text-primary)"
+                    : "var(--auth-text-primary)",
+              }}
             >
-              Register
+              <span className="leading-none">Register</span>
             </button>
             <button
               onClick={() => setMode("forgot")}
-              className={`flex-1 py-3 px-4 rounded-xl font-semibold text-sm transition-all duration-300 ${
-                mode === "forgot"
-                  ? "bg-white text-slate-900 shadow-lg"
-                  : "text-white hover:text-slate-200"
+              className={`flex-1 py-2.5 sm:py-3 px-2 sm:px-3 rounded-lg sm:rounded-xl font-medium sm:font-semibold text-xs sm:text-sm transition-all duration-300 flex items-center justify-center min-h-[44px] sm:min-h-[48px] ${
+                mode === "forgot" ? "shadow-lg" : ""
               }`}
+              style={{
+                backgroundColor:
+                  mode === "forgot" ? "var(--auth-purple)" : "transparent",
+                color:
+                  mode === "forgot"
+                    ? "var(--auth-text-primary)"
+                    : "var(--auth-text-primary)",
+              }}
             >
-              Forgot Password
+              <span className="leading-none">Forgot Password</span>
             </button>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
             {mode === "register" && (
               <>
                 {/* Name Input */}
                 <div>
                   <label
                     htmlFor="name"
-                    className="block text-sm font-medium text-white mb-2"
+                    className="block text-sm font-medium mb-1.5 sm:mb-2"
+                    style={{ color: "var(--auth-text-primary)" }}
                   >
                     Full Name
                   </label>
@@ -123,13 +158,27 @@ export default function AuthPage() {
                     type="text"
                     value={formData.name}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 bg-white/10 border rounded-xl text-white placeholder-slate-300 border-white/20 ${
+                    className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base ${
                       errors.name ? "border-red-400" : ""
                     }`}
+                    style={{
+                      backgroundColor: "var(--auth-input-bg)",
+                      border: `1px solid ${
+                        errors.name
+                          ? "var(--auth-red)"
+                          : "var(--auth-input-border)"
+                      }`,
+                      color: "var(--auth-text-primary)",
+                    }}
                     placeholder="Enter your full name"
                   />
                   {errors.name && (
-                    <p className="mt-1 text-sm text-red-300">{errors.name}</p>
+                    <p
+                      className="mt-1 text-sm"
+                      style={{ color: "var(--auth-red)" }}
+                    >
+                      {errors.name}
+                    </p>
                   )}
                 </div>
               </>
@@ -139,7 +188,8 @@ export default function AuthPage() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-white mb-2"
+                className="block text-sm font-medium mb-1.5 sm:mb-2"
+                style={{ color: "var(--auth-text-primary)" }}
               >
                 Email Address
               </label>
@@ -149,13 +199,27 @@ export default function AuthPage() {
                 type="email"
                 value={formData.email}
                 onChange={handleChange}
-                className={`w-full px-4 py-3 bg-white/10 border rounded-xl text-white placeholder-slate-300 border-white/20 ${
+                className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base ${
                   errors.email ? "border-red-400" : ""
                 }`}
+                style={{
+                  backgroundColor: "var(--auth-input-bg)",
+                  border: `1px solid ${
+                    errors.email
+                      ? "var(--auth-red)"
+                      : "var(--auth-input-border)"
+                  }`,
+                  color: "var(--auth-text-primary)",
+                }}
                 placeholder="Enter your email"
               />
               {errors.email && (
-                <p className="mt-1 text-sm text-red-300">{errors.email}</p>
+                <p
+                  className="mt-1 text-sm"
+                  style={{ color: "var(--auth-red)" }}
+                >
+                  {errors.email}
+                </p>
               )}
             </div>
 
@@ -165,7 +229,8 @@ export default function AuthPage() {
                 <div>
                   <label
                     htmlFor="password"
-                    className="block text-sm font-medium text-white mb-2"
+                    className="block text-sm font-medium mb-1.5 sm:mb-2"
+                    style={{ color: "var(--auth-text-primary)" }}
                   >
                     Password
                   </label>
@@ -175,13 +240,25 @@ export default function AuthPage() {
                     type="password"
                     value={formData.password}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 bg-white/10 border rounded-xl text-white placeholder-slate-300 border-white/20 ${
+                    className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base ${
                       errors.password ? "border-red-400" : ""
                     }`}
+                    style={{
+                      backgroundColor: "var(--auth-input-bg)",
+                      border: `1px solid ${
+                        errors.password
+                          ? "var(--auth-red)"
+                          : "var(--auth-input-border)"
+                      }`,
+                      color: "var(--auth-text-primary)",
+                    }}
                     placeholder="Enter your password"
                   />
                   {errors.password && (
-                    <p className="mt-1 text-sm text-red-300">
+                    <p
+                      className="mt-1 text-sm"
+                      style={{ color: "var(--auth-red)" }}
+                    >
                       {errors.password}
                     </p>
                   )}
@@ -192,17 +269,35 @@ export default function AuthPage() {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-purple-600 text-white py-3 px-4 rounded-xl font-bold text-lg hover:bg-purple-700 transition-all duration-300"
+              className="w-full py-2.5 sm:py-3 px-4 rounded-lg sm:rounded-xl font-semibold sm:font-bold text-base sm:text-lg transition-all duration-300 mt-4 sm:mt-6"
+              style={{
+                backgroundColor: "var(--auth-purple)",
+                color: "var(--auth-text-primary)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor =
+                  "var(--auth-purple-hover)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--auth-purple)";
+              }}
             >
               {mode === "register" ? "Create Account" : "Send Reset Link"}
             </button>
           </form>
 
           {/* Back to Login */}
-          <div className="mt-8 text-center">
+          <div className="mt-4 sm:mt-6 text-center">
             <Link
               href="/login"
-              className="text-slate-300 hover:text-white font-medium transition-colors duration-200"
+              className="font-medium transition-colors duration-200 text-sm sm:text-base"
+              style={{ color: "var(--auth-text-secondary)" }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = "var(--auth-text-primary)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = "var(--auth-text-secondary)";
+              }}
             >
               ← Back to Login
             </Link>
@@ -210,8 +305,11 @@ export default function AuthPage() {
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-8">
-          <p className="text-slate-400 text-sm">
+        <div className="text-center mt-4 sm:mt-6">
+          <p
+            className="text-xs sm:text-sm"
+            style={{ color: "var(--auth-text-muted)" }}
+          >
             © 2024 VWashCar. All rights reserved.
           </p>
         </div>
